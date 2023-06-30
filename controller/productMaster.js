@@ -1,6 +1,13 @@
+const multer = require('multer');
 const productMasterSchema = require('../models/product-master');
 const sizeSchema = require('../models/size-master');
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
+const excelToJson = require('convert-excel-to-json');
+const csvtojson = require("csvtojson");
+const subCategorySchema = require('../models/subCategory-master');
+const categorySchema = require('../models/category-master');
+
+// var multer      = require('multer');
 
 
 
@@ -14,7 +21,7 @@ const addProductMaster = async (req, res) => {
             let bulkSave = [];
             const data = {
                 name: req.body.name,
-                code:req.body.code,
+                code: req.body.code,
                 categoryId: req.body.categoryId,
                 subCategoryId: req.body.subCategoryId
             }
@@ -30,7 +37,7 @@ const addProductMaster = async (req, res) => {
 
             const result = await productMasterSchema.bulkSave(bulkSave);
 
-            return res.send({status:200, message:result, process:'product'})
+            return res.send({ status: 200, message: result, process: 'product' })
             //    if(result) {
 
             //    }
@@ -105,5 +112,92 @@ const getProductMaster = async (req, res) => {
     }
 }
 
+const bulkUpload = (req, res) => {
+    try {
+        var categories, subCategories;
+        categorySchema.find()
+            .then(async category => {
+                if (category) {
+                    categories = category;
+                    subCategorySchema.find()
+                        .then(async subCategory => {
+                            subCategories = subCategory;
+                            const size = await sizeSchema.find();
+                            let filePath = './public' + '/excelUploads/' + req.file.filename;
 
-module.exports = { addProductMaster, getProductMaster }
+                            var arrayToInsert = [];
+                            await csvtojson().fromFile(filePath).then(async source => {
+                                // Fetching the all data from each row
+                                for (var i = 0; i < source.length; i++) {
+                                    let categoryId = await getIdByName(source[i]["category"], categories);
+                                    let subCategoryId = await getIdByName(source[i]["subCategory"], subCategories);
+                                    // console.log(categoryId);
+                                    // console.log(subCategoryId)
+                                    if (!categoryId || !subCategoryId) {
+                                        return res.send({ status: 400, data: [source[i]["category"], source[i]["subCategory"]], message: 'Invalid Category or subCategory added at index ' + i, process: 'category' })
+                                    }
+                                    console.log(size[0].categoryId.equals(categoryId));
+
+                                    let filterSize = await size.filter(s => s.categoryId.equals(categoryId));
+                                    if (filterSize.length === 0) {
+                                        return res.send({ status: 400, message: "Sizes dont exist for category " + source[i]["category"], process: 'ProductMaster' })
+
+                                    }
+                                    filterSize[0].size.map(s => {
+                                        var singleRow = {
+                                            categoryId: categoryId,
+                                            subCategoryId: subCategoryId,
+                                            code: source[i]["code"],
+                                            name: source[i]["name"],
+                                            size: s
+
+                                        };
+                                        arrayToInsert.push(singleRow);
+                                    })
+
+                                    console.log(arrayToInsert);
+                                }
+                                productMasterSchema.insertMany(arrayToInsert)
+                                    .then(products => {
+                                        return res.send({ status: 200, data: products, message: 'Products uploaded successfully', process: 'ProductMaster' })
+                                    })
+                                    .catch(err => {
+                                        return res.send({ status: 400, message: err, process: 'ProductMaster' })
+                                    })
+                            })
+
+                        })
+                        .catch(err => {
+                            console.log(err)
+                            return res.send({ status: 400, message: err, process: 'ProductMaster' })
+                        })
+
+                } else {
+                    return res.send({ status: 400, message: 'unexpected error occured', process: 'ProductMaster' })
+                }
+            })
+            .catch(err => {
+                console.log(err)
+                return res.send({ status: 400, message: err, process: 'ProductMaster' })
+            })
+
+    }
+    catch (err) {
+        console.log(err)
+        return res.send({
+            status: 400, message: err, process: 'products'
+        });
+    }
+}
+
+const getIdByName = async (name, collection) => {
+    let id = await collection.filter(c => c.name === name);
+    if (id.length > 0)
+        return id[0]._id;
+
+    return null;
+
+}
+
+
+module.exports = { addProductMaster, getProductMaster, bulkUpload }
