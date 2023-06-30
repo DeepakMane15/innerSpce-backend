@@ -91,32 +91,37 @@ const getTransaction = async (req, res) => {
     invoiceSchema
       .find({})
       .populate([
-        { path: "products.productId", model: "Product-Master",
-        populate:{path:'subCategoryId',model:'SubCategory',select:{_id:0,name:1,categoryId:1},
-        populate:{path:'categoryId',model:'Category',select:{_id:0,name:1}},},  },
-        { path: "clientName", model: "Client",select:{_id:0,name:1} },
+        {
+          path: "products.productId", model: "Product-Master",
+          populate: {
+            path: 'subCategoryId', model: 'SubCategory', select: { _id: 0, name: 1, categoryId: 1 },
+            populate: { path: 'categoryId', model: 'Category', select: { _id: 0, name: 1 } },
+          },
+        },
+        { path: "clientName", model: "Client", select: { _id: 0, name: 1 } },
       ]).then(async (transactions) => {
-        let result=[]
+        let result = []
         if (transactions) {
-            transactions.forEach(invoice => {
-                const {products}=invoice;
-                products.forEach((data,index) => {
-                    let tempResult={}
-                    const {quantity,productId }=data
-                    const {name,code,size,subCategoryId}=productId;
-                    tempResult.invoiceDate=invoice.invoiceDate;
-                    tempResult.invoiceNo=invoice.id;
-                    tempResult.type=invoice.type;
-                    tempResult.clientName=invoice.clientName.name;
-                    tempResult.name=name;
-                    tempResult.code=code;
-                    tempResult.size=size;
-                    tempResult.quantity=quantity;
-                    tempResult.subCategory=subCategoryId.name;
-                    tempResult.category=subCategoryId.categoryId.name;
-                    result.push(tempResult)
-                });
+          transactions.forEach(invoice => {
+            const { products } = invoice;
+            products.forEach((data, index) => {
+              let tempResult = {}
+              const { quantity, productId } = data
+              const { name, code, size, subCategoryId } = productId;
+              tempResult._id = invoice._id;
+              tempResult.invoiceDate = invoice.invoiceDate;
+              tempResult.invoiceNo = invoice.id;
+              tempResult.type = invoice.type;
+              tempResult.clientName = invoice.clientName.name;
+              tempResult.name = name;
+              tempResult.code = code;
+              tempResult.size = size;
+              tempResult.quantity = quantity;
+              tempResult.subCategory = subCategoryId.name;
+              tempResult.category = subCategoryId.categoryId.name;
+              result.push(tempResult)
             });
+          });
           return res.send({
             status: 200,
             data: result,
@@ -146,4 +151,44 @@ const getTransaction = async (req, res) => {
   }
 };
 
-module.exports = { addTransaction, getTransaction };
+const getTransactionById = async (req, res) => {
+  try {
+console.log(req.params.id)
+
+    invoiceSchema.findOne({ _id: req.params.id }).populate([
+      {
+        path: "products.productId", model: "Product-Master",
+        populate: {
+          path: 'subCategoryId', model: 'SubCategory', select: { _id: 0, name: 1, categoryId: 1 },
+          populate: { path: 'categoryId', model: 'Category', select: { _id: 0, name: 1 } },
+        },
+      },
+      { path: "clientName", model: "Client", select: { _id: 0, name: 1 } },
+    ])
+      .then(transaction => {
+        return res.send({
+          status: 200,
+          data: transaction,
+          process: "transactions",
+        });
+      })
+      .catch(err => {
+        return res.send({
+          status: 400,
+          message: err,
+          process: "transactions",
+        });
+      })
+
+  }
+  catch (err) {
+    return res.send({
+      status: 400,
+      message: err,
+      process: "transactions",
+    });
+  }
+}
+
+
+module.exports = { addTransaction, getTransaction, getTransactionById };
