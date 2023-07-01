@@ -88,7 +88,9 @@ const addTransaction = async (req, res) => {
 
 const getTransaction = async (req, res) => {
   try {
-    const { subCategoryId, categoryId, productId } = req.params;
+    const { subCategoryId, categoryId, productId } = req.query;
+
+    console.log(req.query)
 
     let populateSubCategory = {
       path: 'subCategoryId',
@@ -96,7 +98,7 @@ const getTransaction = async (req, res) => {
       select: { _id: 0, name: 1, categoryId: 1 }
     }
     if (subCategoryId) {
-      populateSubCategory["match"] = { "subCategoryId": { "$in": [mongoose.Types.ObjectId(subCategoryId)] } }
+      populateSubCategory["match"] = { "subCategoryId": { "$in": [new mongoose.Types.ObjectId(subCategoryId)] } }
     }
 
     let populateCategory = {
@@ -105,7 +107,7 @@ const getTransaction = async (req, res) => {
       select: { _id: 0, name: 1 }
     }
     if (categoryId) {
-      populateCategory["match"] = { "categoryId": { "$in": [mongoose.Types.ObjectId(categoryId)] } };
+      populateCategory["match"] = { "categoryId": { "$in": [new mongoose.Types.ObjectId(categoryId)] } };
     }
     populateSubCategory["populate"] = populateCategory
     let populateProduct = {
@@ -113,7 +115,7 @@ const getTransaction = async (req, res) => {
       model: "Product-Master"
     }
     if (productId) {
-      populateProduct["match"] = { "productId": { "$in": [mongoose.Types.ObjectId(productId)] } }
+      populateProduct["match"] = { "productId": { "$in": [new mongoose.Types.ObjectId(productId)] } }
     }
     populateProduct["populate"] = populateSubCategory;
 
@@ -163,6 +165,7 @@ function processTransaction(transactions) {
       const { quantity, productId } = data
       const { name, code, size, subCategoryId } = productId;
       tempResult.invoiceDate = invoice.invoiceDate;
+      tempResult.id = invoice._id;
       tempResult.invoiceNo = invoice.id;
       tempResult.type = invoice.type;
       tempResult.clientName = invoice.clientName.name;
@@ -196,14 +199,14 @@ const getTransactionById = async (req, res) => {
         return res.send({
           status: 200,
           data: transaction,
-          process: "transactions",
+          process: "getTransactionById",
         });
       })
       .catch(err => {
         return res.send({
           status: 400,
           message: err,
-          process: "transactions",
+          process: "getTransactionById",
         });
       })
 

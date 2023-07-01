@@ -10,6 +10,8 @@ const { addTransaction, getTransaction,getTransactionById } = require('../contro
 router.post('/', requireSignin, addTransaction);
 router.get('/get', requireSignin, getTransaction);
 router.get('/get/:id', requireSignin, getTransactionById);
+// router.get('/get/:categoryId/:subCategoryId/:productId', requireSignin, getTransaction);
+
 
 
 

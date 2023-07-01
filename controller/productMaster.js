@@ -136,7 +136,6 @@ const bulkUpload = (req, res) => {
                                     if (!categoryId || !subCategoryId) {
                                         return res.send({ status: 400, data: [source[i]["category"], source[i]["subCategory"]], message: 'Invalid Category or subCategory added at index ' + i, process: 'category' })
                                     }
-                                    console.log(size[0].categoryId.equals(categoryId));
 
                                     let filterSize = await size.filter(s => s.categoryId.equals(categoryId));
                                     if (filterSize.length === 0) {
