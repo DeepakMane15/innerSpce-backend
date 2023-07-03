@@ -7,6 +7,29 @@ const clientSchema = new mongoose.Schema({
         required: true,
         unique: true,
         trim: true
+    },
+    address: {
+        type: String,
+        required: true,
+        trim: true
+    },
+    gstNo: {
+        type: String,
+        required: true,
+        unique: true,
+        trim: true
+    },
+    state: {
+        type: String,
+        required: true,
+        unique: true,
+        trim: true
+    },
+    contactNo: {
+        type: Number,
+        required: true,
+        unique: true,
+        trim: true
     }
 },
     { timestamp: true });

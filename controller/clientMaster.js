@@ -5,7 +5,12 @@ const addclient = async (req, res) => {
     try {
 
         const client = new clientSchema({
-            name: req.body.name
+            name: req.body.name,
+            address: req.body.address,
+            gstNo: req.body.gstNo,
+            state: req.body.state,
+            contactNo: req.body.contactNo,
+
         })
 
         await client.save()

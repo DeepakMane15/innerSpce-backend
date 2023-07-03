@@ -89,13 +89,18 @@ const addTransaction = async (req, res) => {
 const getTransaction = async (req, res) => {
   try {
     let { subCategoryId, categoryId, productId } = req.query;
+    console.log(req.query)
+    let populateClientName = {
+      path: 'clientName',
+      model: 'Client'
+    } 
     let populateSubCategory = {
       path: 'subCategoryId',
       model: 'SubCategory',
       select: { _id: 1, name: 1, categoryId: 1 }
     }
     if (subCategoryId) {
-      let subCategoryId = new mongoose.Types.ObjectId(subCategoryId)
+      subCategoryId = new mongoose.Types.ObjectId(subCategoryId)
       populateSubCategory["match"] = { "_id": subCategoryId }
     }
 
@@ -105,7 +110,7 @@ const getTransaction = async (req, res) => {
       select: { _id: 1, name: 1 }
     }
     if (categoryId) {
-      let categoryId = new mongoose.Types.ObjectId(categoryId)
+      categoryId = new mongoose.Types.ObjectId(categoryId)
       populateCategory["match"] = { "_id": categoryId };
     }
 
@@ -120,13 +125,13 @@ const getTransaction = async (req, res) => {
       populateProduct["match"] = { "_id": productId }
     }
     populateProduct["populate"] = populateSubCategory;
-
     invoiceSchema
       .find({})
-      .populate(populateProduct).then(async (transactions) => {
+      .populate(populateProduct)
+      .populate(populateClientName).then(async (transactions) => {
         if (transactions) {
           const result = processTransaction(transactions, productId, categoryId, subCategoryId);
-          console.log(result)
+          // console.log(result)
           return res.send({
             status: 200,
             data: result,
@@ -165,11 +170,12 @@ function processTransaction(transactions, product, subCategory, categoryId) {
       const { quantity, productId } = data
       if (productId) {
         const { name, code, size, subCategoryId } = productId;
-        if (subCategoryId || subCategoryId.categoryId) {
+        if (subCategoryId || subCategoryId?.categoryId) {
           tempResult.invoiceDate = invoice.invoiceDate;
           tempResult.invoiceNo = invoice.id;
           tempResult.type = invoice.type;
           tempResult.clientName = invoice.clientName.name;
+          tempResult.id = invoice._id
           tempResult.name = name;
           tempResult.code = code;
           tempResult.size = size;
@@ -196,7 +202,7 @@ const getTransactionById = async (req, res) => {
           populate: { path: 'categoryId', model: 'Category', select: { _id: 0, name: 1 } },
         },
       },
-      { path: "clientName", model: "Client", select: { _id: 0, name: 1 } },
+      { path: "clientName", model: "Client" },
     ])
       .then(transaction => {
         return res.send({
