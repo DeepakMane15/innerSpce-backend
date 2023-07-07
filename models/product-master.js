@@ -19,12 +19,16 @@ const productMasterSchema = new mongoose.Schema({
     subCategoryId:
     {
         type: mongoose.Schema.ObjectId,
-        required: true,
+        required: false,
     },
     size: {
         type: String,
         required: true,
         trim: true
+    },
+    status: {
+        type: Boolean,
+        default: 1
     }
 },
     { timestamp: true });

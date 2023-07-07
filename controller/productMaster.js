@@ -112,6 +112,58 @@ const getProductMaster = async (req, res) => {
     }
 }
 
+const updateProductMaster = async (req, res) => {
+    try {
+        const update = {
+            name: req.body.name,
+            code: req.body.code,
+            categoryId: req.body.categoryId,
+            subCategoryId: req.body.subCategoryId
+        }
+        productMasterSchema.updateOne({ _id: new mongoose.Types.ObjectId(req.body.id) }, { $set: update })
+            .then(update => {
+                return res.send({ status: 200, message: update, process: 'updateProductMaster' })
+            })
+            .catch(err => {
+                console.log(err)
+
+                return res.send({
+                    status: 400, message: err, process: 'updateProductMaster'
+                });
+            })
+    }
+    catch (err) {
+        console.log(err)
+
+        return res.send({
+            status: 400, message: err, process: 'updateProductMaster'
+        });
+    }
+}
+
+const deleteProductMaster = async (req, res) => {
+    try {
+        productMasterSchema.deleteOne({ _id: new mongoose.Types.ObjectId(req.body.id) }, { $set: { status: false } })
+            .then(deleteProduct => {
+                return res.send({ status: 200, message: deleteProduct, process: 'deleteProductMaster' })
+            })
+            .catch(err => {
+                console.log(err)
+
+                return res.send({
+                    status: 400, message: err, process: 'deleteProductMaster'
+                });
+            })
+    }
+    catch (err) {
+        console.log(err)
+
+        return res.send({
+            status: 400, message: err, process: 'deleteProductMaster'
+        });
+    }
+}
+
 const bulkUpload = (req, res) => {
     try {
         var categories, subCategories;
@@ -199,4 +251,4 @@ const getIdByName = async (name, collection) => {
 }
 
 
-module.exports = { addProductMaster, getProductMaster, bulkUpload }
+module.exports = { addProductMaster, getProductMaster, bulkUpload, updateProductMaster, deleteProductMaster }

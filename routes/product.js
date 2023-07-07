@@ -7,7 +7,7 @@ var excelStorage = multer.diskStorage({
         cb(null, './public/excelUploads');      // file added to the public folder of the root directory
     },
     filename: (req, file, cb) => {
-        
+
         cb(null, file.originalname);
     }
 });
@@ -15,12 +15,14 @@ var excelUploads = multer({ storage: excelStorage });
 
 
 const { requireSignin } = require('../middleware');
-const { addProductMaster, getProductMaster, bulkUpload } = require('../controller/productMaster');
+const { addProductMaster, getProductMaster, bulkUpload, updateProductMaster, deleteProductMaster } = require('../controller/productMaster');
 
 
 /* GET users listing. */
 router.post('/', requireSignin, addProductMaster);
 router.get('/get', requireSignin, getProductMaster);
+router.put('/update', requireSignin, updateProductMaster);
+router.put('/delete', requireSignin, deleteProductMaster);
 router.post('/bulkUpload', requireSignin, excelUploads.single("uploadfile"), bulkUpload);
 
 
