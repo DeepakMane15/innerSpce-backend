@@ -19,7 +19,7 @@ const productMasterSchema = new mongoose.Schema({
     subCategoryId:
     {
         type: mongoose.Schema.ObjectId,
-        required: false,
+        required: true,
     },
     size: {
         type: String,
