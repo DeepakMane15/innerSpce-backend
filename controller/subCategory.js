@@ -1,5 +1,5 @@
 const subCategorySchema = require('../models/subCategory-master');
-
+const mongoose = require('mongoose');
 
 const addSubCategory = async (req, res) => {
     try {
@@ -61,5 +61,56 @@ const getSubCategories = async (req, res) => {
     }
 }
 
-module.exports = { addSubCategory, getSubCategories }
+const updateSubCategory = async (req, res) => {
+    try {
+        const update = {
+            name: req.body.name,
+            categoryId: req.body.categoryId
+        }
+        console.log(update, req.body.id);
+        subCategorySchema.findOneAndUpdate({ _id: new mongoose.Types.ObjectId(req.body.id) }, { $set: update })
+            .then(update => {
+                return res.send({ status: 200, message: "SubCategory Updated Successfully", process: 'updateSubCategory' })
+            })
+            .catch(err => {
+                console.log(err)
+
+                return res.send({
+                    status: 400, message: err, process: 'updateSubCategory'
+                });
+            })
+    }
+    catch (err) {
+        console.log(err)
+
+        return res.send({
+            status: 400, message: err, process: 'updateSubCategory'
+        });
+    }
+}
+
+const deleteSubCategory = async (req, res) => {
+    try {
+        subCategorySchema.findOneAndUpdate({ _id: new mongoose.Types.ObjectId(req.body.id) }, { $set: { status: false } })
+            .then(deleteSubCategory => {
+                return res.send({ status: 200, message: 'SubCategory deleted successfully', process: 'deleteSubCategory' })
+            })
+            .catch(err => {
+                console.log(err)
+
+                return res.send({
+                    status: 400, message: err, process: 'deleteSubCategory'
+                });
+            })
+    }
+    catch (err) {
+        console.log(err)
+
+        return res.send({
+            status: 400, message: err, process: 'deleteSubCategory'
+        });
+    }
+}
+
+module.exports = { addSubCategory, getSubCategories, updateSubCategory, deleteSubCategory }
 

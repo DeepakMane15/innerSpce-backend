@@ -15,7 +15,7 @@ var excelUploads = multer({ storage: excelStorage });
 
 
 const { requireSignin } = require('../middleware');
-const { addProductMaster, getProductMaster, bulkUpload, updateProductMaster, deleteProductMaster } = require('../controller/productMaster');
+const { addProductMaster, getProductMaster, bulkUpload, updateProductMaster, deleteProductMaster, updateProduct } = require('../controller/productMaster');
 
 
 /* GET users listing. */
@@ -24,6 +24,7 @@ router.get('/get', requireSignin, getProductMaster);
 router.put('/update', requireSignin, updateProductMaster);
 router.put('/delete', requireSignin, deleteProductMaster);
 router.post('/bulkUpload', requireSignin, excelUploads.single("uploadfile"), bulkUpload);
+router.get('/updateProduct', updateProduct)
 
 
 

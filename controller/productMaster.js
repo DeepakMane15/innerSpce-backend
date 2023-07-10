@@ -6,6 +6,7 @@ const excelToJson = require('convert-excel-to-json');
 const csvtojson = require("csvtojson");
 const subCategorySchema = require('../models/subCategory-master');
 const categorySchema = require('../models/category-master');
+const clientSchema = require('../models/client-master')
 
 // var multer      = require('multer');
 
@@ -53,6 +54,29 @@ const addProductMaster = async (req, res) => {
     }
 }
 
+const updateProduct = async (req, res) => {
+    try {
+        clientSchema.updateMany({}, { $set: { status: 1 } })
+            .then((update) => {
+
+                return res.send({ status: 200, data: update, process: 'products' })
+            })
+
+            .catch(err => {
+                console.log(err)
+                return res.send({
+                    status: 400, message: err, process: 'product'
+                });
+            })
+    }
+    catch (err) {
+        console.log(err)
+        return res.send({
+            status: 400, message: err, process: 'product'
+        });
+    }
+}
+
 const getProductMaster = async (req, res) => {
     try {
         // productMasterSchema.aggregate([
@@ -80,7 +104,7 @@ const getProductMaster = async (req, res) => {
         // ])
 
 
-        productMasterSchema.find().populate([{ path: 'categoryId', model: 'Category', select: { name: 1, _id: 1 } }, { path: 'subCategoryId', model: 'SubCategory', select: { name: 1, _id: 1 } }])
+        productMasterSchema.find({ status: 1 }).populate([{ path: 'categoryId', model: 'Category', select: { name: 1, _id: 1 } }, { path: 'subCategoryId', model: 'SubCategory', select: { name: 1, _id: 1 } }])
             .then(async products => {
 
                 let unique = products;
@@ -120,9 +144,10 @@ const updateProductMaster = async (req, res) => {
             categoryId: req.body.categoryId,
             subCategoryId: req.body.subCategoryId
         }
-        productMasterSchema.updateOne({ _id: new mongoose.Types.ObjectId(req.body.id) }, { $set: update })
+        console.log(update, req.body.id);
+        productMasterSchema.findOneAndUpdate({ _id: new mongoose.Types.ObjectId(req.body.id) }, { $set: update })
             .then(update => {
-                return res.send({ status: 200, message: update, process: 'updateProductMaster' })
+                return res.send({ status: 200, message: "Product updated successfully", process: 'updateProductMaster' })
             })
             .catch(err => {
                 console.log(err)
@@ -143,9 +168,9 @@ const updateProductMaster = async (req, res) => {
 
 const deleteProductMaster = async (req, res) => {
     try {
-        productMasterSchema.deleteOne({ _id: new mongoose.Types.ObjectId(req.body.id) }, { $set: { status: false } })
+        productMasterSchema.findOneAndUpdate({ _id: new mongoose.Types.ObjectId(req.body.id) }, { $set: { status: false } })
             .then(deleteProduct => {
-                return res.send({ status: 200, message: deleteProduct, process: 'deleteProductMaster' })
+                return res.send({ status: 200, message: 'Product deleted successfully', process: 'deleteProductMaster' })
             })
             .catch(err => {
                 console.log(err)
@@ -251,4 +276,4 @@ const getIdByName = async (name, collection) => {
 }
 
 
-module.exports = { addProductMaster, getProductMaster, bulkUpload, updateProductMaster, deleteProductMaster }
+module.exports = { addProductMaster, getProductMaster, bulkUpload, updateProductMaster, deleteProductMaster, updateProduct }

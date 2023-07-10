@@ -30,7 +30,9 @@ const clientSchema = new mongoose.Schema({
         required: true,
         unique: true,
         trim: true
-    }
+    },
+    status: { type: Boolean, default: 1 }
+
 },
     { timestamp: true });
 
