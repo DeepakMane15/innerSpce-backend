@@ -1,3 +1,4 @@
+const productMasterSchema = require('../models/product-master');
 const stock = require('../models/stock');
 const stockSchema = require('../models/stock');
 var async = require("async");
@@ -40,7 +41,7 @@ const addStock = async (data) => {
     }
 }
 
-const getStocks = async (req, res) => {
+const getStocks1 = async (req, res) => {
     try {
         stockSchema.aggregate([
             {
@@ -72,6 +73,55 @@ const getStocks = async (req, res) => {
                     },
                 },
             },
+        ])
+            .then(async stocks => {
+
+                stocks.map(d => {
+                    d.data.map(dd => {
+                        d[dd.size] = dd.quantity;
+                    })
+                })
+
+
+                if (stocks) {
+                    return res.send({ status: 200, data: stocks, totalMessages: stocks.length, process: 'stock1' })
+                } else {
+                    return res.send({ status: 200, data: stocks, message: 'stocks does not exist', process: 'stock' })
+                }
+            })
+            .catch(err => {
+                console.log(err)
+                return res.send({ status: 400, message: err, process: 'stock' })
+            })
+    }
+    catch (err) {
+        console.log(err)
+        return res.send({
+            status: 400, message: err, process: 'stock'
+        });
+    }
+}
+
+const getStocks = async (req, res) => {
+    try {
+        productMasterSchema.aggregate([
+            {
+                $lookup: {
+                    from: "Stocks",
+                    localField: "_id",
+                    foreignField: "productId",
+                    as: "data"
+                }
+            }, {
+                $unwind: {
+                    path: "$data",
+                    preserveNullAndEmptyArrays: true
+                }
+            },{
+                $addFields:{
+                    'quantity': '$data.quantity'
+                }
+            }
         ])
             .then(async stocks => {
 
