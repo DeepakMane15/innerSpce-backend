@@ -2,6 +2,8 @@ const productMasterSchema = require('../models/product-master');
 const stock = require('../models/stock');
 const stockSchema = require('../models/stock');
 var async = require("async");
+const _ = require("lodash");
+
 
 const addStock = async (data) => {
     try {
@@ -75,12 +77,13 @@ const getStocks1 = async (req, res) => {
             },
         ])
             .then(async stocks => {
-
-                stocks.map(d => {
-                    d.data.map(dd => {
-                        d[dd.size] = dd.quantity;
-                    })
-                })
+            const distinctStocks=stocks.groupBy(product=>{return product.name});
+            console.log("disctinct:================>",distinctStocks);
+                // stocks.map(d => {
+                //     d.data.map(dd => {
+                //         d[dd.size] = dd.quantity;
+                //     })
+                // })
 
 
                 if (stocks) {
@@ -106,34 +109,42 @@ const getStocks = async (req, res) => {
     try {
         productMasterSchema.aggregate([
             {
-                $lookup: {
-                    from: "Stocks",
-                    localField: "_id",
-                    foreignField: "productId",
-                    as: "data"
+                '$lookup': {
+                    'from': 'stocks',
+                    'localField': '_id',
+                    'foreignField': 'productId',
+                    'as': 'data'
                 }
             }, {
-                $unwind: {
-                    path: "$data",
-                    preserveNullAndEmptyArrays: true
+                '$unwind': {
+                    'path': '$data',
+                    'preserveNullAndEmptyArrays': true
                 }
-            },{
-                $addFields:{
+            }, {
+                '$project': {
+                    'name': 1,
+                    'categoryId': 1,
+                    'subCategoryId': 1,
+                    'size': 1,
+                    'code': 1,
                     'quantity': '$data.quantity'
                 }
             }
-        ])
+        ]
+        )
             .then(async stocks => {
-
-                stocks.map(d => {
-                    d.data.map(dd => {
-                        d[dd.size] = dd.quantity;
-                    })
+                const distinctStocks=_.groupBy(stocks, item => {
+                    return [item['name'], item['categoryId'], item['subCategoryId']]
                 })
+                // 'name','subCategoryId')
+                console.log("disctinct:================>",distinctStocks);  
+                // stocks.map(d => {
+                //     d[d['size']] = d.quantity || 0;
+                // })
 
 
                 if (stocks) {
-                    return res.send({ status: 200, data: stocks, totalMessages: stocks.length, process: 'stock1' })
+                    return res.send({ status: 200, data: distinctStocks, totalMessages: stocks.length, process: 'stock1' })
                 } else {
                     return res.send({ status: 200, data: stocks, message: 'stocks does not exist', process: 'stock' })
                 }
