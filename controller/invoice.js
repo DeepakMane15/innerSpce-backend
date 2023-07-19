@@ -90,10 +90,11 @@ const getTransaction = async (req, res) => {
   try {
     let { subCategoryId, categoryId, productId } = req.query;
     console.log(req.query)
+    console.log("asdasd ", (req.query.startDate))
     let populateClientName = {
       path: 'clientName',
       model: 'Client'
-    } 
+    }
     let populateSubCategory = {
       path: 'subCategoryId',
       model: 'SubCategory',
@@ -125,8 +126,24 @@ const getTransaction = async (req, res) => {
       populateProduct["match"] = { "_id": productId }
     }
     populateProduct["populate"] = populateSubCategory;
+
+    
+
+    let filterDate = {};
+
+    if (req.query.startDate && req.query.endDate) {
+      filterDate = {
+        invoiceDate: {
+          $gte: req.query.startDate ? new Date(req.query.startDate) : new Date(),
+          $lt: req.query.endDate ? new Date(req.query.endDate) : new Date()
+        }
+      }
+    }
+
     invoiceSchema
-      .find({})
+      .find(
+        filterDate
+      )
       .populate(populateProduct)
       .populate(populateClientName).then(async (transactions) => {
         if (transactions) {

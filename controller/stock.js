@@ -126,12 +126,6 @@ const getStocks = async (req, res) => {
 
         console.log(filterObj)
 
-        // {
-        //     '$and': [
-        //         { categoryId: new mongoose.Types.ObjectId("64b5337ba4ca8ba5e3d614dc") },
-        //         { subCategoryId: new mongoose.Types.ObjectId("64b533f1a4ca8ba5e3d614e8") }
-        //     ]
-        // }
 
         productMasterSchema.aggregate([
             {
@@ -162,20 +156,27 @@ const getStocks = async (req, res) => {
         ]
         )
             .then(async stocks => {
-                const distinctStocks = _.groupBy(stocks, item => {
-                    return [item['name'], item['categoryId'], item['subCategoryId']]
-                })
-                // 'name','subCategoryId')
-                console.log("disctinct:================>", distinctStocks);
-                // stocks.map(d => {
-                //     d[d['size']] = d.quantity || 0;
-                // })
+
+                let finalResult = []
+                stocks.forEach(stock => {
+                    const temp = {};
+                    const { name, code, size, quantity } = stock;
+                    const productIndex = finalResult.findIndex(a => a.code === code)
+                    if (finalResult.length === 0 || productIndex < 0) {
+                        temp.name = name;
+                        temp.code = code;
+                        temp[size] = quantity || 0;
+                        finalResult.push(temp)
+                    } else {
+                        finalResult[productIndex][size] = quantity || 0;
+                    }
+                });
 
 
-                if (stocks) {
-                    return res.send({ status: 200, data: distinctStocks, totalMessages: stocks.length, process: 'stock1' })
+                if (finalResult.length) {
+                    return res.send({ status: 200, data: finalResult, totalMessages: finalResult.length, process: 'stock1' })
                 } else {
-                    return res.send({ status: 200, data: stocks, message: 'stocks does not exist', process: 'stock' })
+                    return res.send({ status: 200, data: finalResult, message: 'stocks does not exist', process: 'stock' })
                 }
             })
             .catch(err => {
