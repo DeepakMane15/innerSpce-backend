@@ -3,6 +3,8 @@ const stock = require('../models/stock');
 const stockSchema = require('../models/stock');
 var async = require("async");
 const _ = require("lodash");
+const mongoose = require("mongoose");
+
 
 
 const addStock = async (data) => {
@@ -77,8 +79,8 @@ const getStocks1 = async (req, res) => {
             },
         ])
             .then(async stocks => {
-            const distinctStocks=stocks.groupBy(product=>{return product.name});
-            console.log("disctinct:================>",distinctStocks);
+                const distinctStocks = stocks.groupBy(product => { return product.name });
+                console.log("disctinct:================>", distinctStocks);
                 // stocks.map(d => {
                 //     d.data.map(dd => {
                 //         d[dd.size] = dd.quantity;
@@ -107,8 +109,26 @@ const getStocks1 = async (req, res) => {
 
 const getStocks = async (req, res) => {
     try {
+
+        let filterObj;
+        let catObj = req.query.categoryId ? { categoryId: new mongoose.Types.ObjectId(req.query.categoryId) } : {};
+        let subCatObj = req.query.subCategoryId ? { subCategoryId: new mongoose.Types.ObjectId(req.query.subCategoryId) } : {};
+
+        if (req.query.categoryId && req.query.subCategoryId) {
+            filterObj = { $and: [catObj, subCatObj] };
+        }
+        else if (req.query.categoryId || req.query.subCategoryId) {
+            filterObj = { $or: [catObj, subCatObj] };
+        }
+        else {
+            filterObj = {}
+        }
+
+        console.log(filterObj)
+
         productMasterSchema.aggregate([
             {
+                '$match': { filterObj },
                 '$lookup': {
                     'from': 'stocks',
                     'localField': '_id',
@@ -133,11 +153,11 @@ const getStocks = async (req, res) => {
         ]
         )
             .then(async stocks => {
-                const distinctStocks=_.groupBy(stocks, item => {
+                const distinctStocks = _.groupBy(stocks, item => {
                     return [item['name'], item['categoryId'], item['subCategoryId']]
                 })
                 // 'name','subCategoryId')
-                console.log("disctinct:================>",distinctStocks);  
+                console.log("disctinct:================>", distinctStocks);
                 // stocks.map(d => {
                 //     d[d['size']] = d.quantity || 0;
                 // })
