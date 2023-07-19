@@ -126,9 +126,18 @@ const getStocks = async (req, res) => {
 
         console.log(filterObj)
 
+        // {
+        //     '$and': [
+        //         { categoryId: new mongoose.Types.ObjectId("64b5337ba4ca8ba5e3d614dc") },
+        //         { subCategoryId: new mongoose.Types.ObjectId("64b533f1a4ca8ba5e3d614e8") }
+        //     ]
+        // }
+
         productMasterSchema.aggregate([
             {
-                '$match': { filterObj },
+                '$match': filterObj
+            },
+            {
                 '$lookup': {
                     'from': 'stocks',
                     'localField': '_id',
