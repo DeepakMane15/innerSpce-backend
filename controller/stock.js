@@ -1,7 +1,5 @@
 const productMasterSchema = require('../models/product-master');
-const stock = require('../models/stock');
 const stockSchema = require('../models/stock');
-var async = require("async");
 const _ = require("lodash");
 const mongoose = require("mongoose");
 

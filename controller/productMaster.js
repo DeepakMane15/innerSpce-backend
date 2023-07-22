@@ -2,7 +2,6 @@ const multer = require('multer');
 const productMasterSchema = require('../models/product-master');
 const sizeSchema = require('../models/size-master');
 const mongoose = require('mongoose');
-const excelToJson = require('convert-excel-to-json');
 const csvtojson = require("csvtojson");
 const subCategorySchema = require('../models/subCategory-master');
 const categorySchema = require('../models/category-master');
