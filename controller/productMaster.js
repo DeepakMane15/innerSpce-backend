@@ -139,12 +139,12 @@ const updateProductMaster = async (req, res) => {
     try {
         const update = {
             name: req.body.name,
-            code: req.body.code,
+            // code: req.body.code,
             categoryId: req.body.categoryId,
             subCategoryId: req.body.subCategoryId
         }
         console.log(update, req.body.id);
-        productMasterSchema.findOneAndUpdate({ _id: new mongoose.Types.ObjectId(req.body.id) }, { $set: update })
+        productMasterSchema.findOneAndUpdate({ code: req.body.code }, { $set: update })
             .then(update => {
                 return res.send({ status: 200, message: "Product updated successfully", process: 'updateProductMaster' })
             })
