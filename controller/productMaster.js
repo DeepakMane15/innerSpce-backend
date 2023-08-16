@@ -142,7 +142,7 @@ const updateProductMaster = async (req, res) => {
 
 const deleteProductMaster = async (req, res) => {
     try {
-        productMasterSchema.findOneAndUpdate({ code: req.body.code }, { $set: { status: false } })
+        productMasterSchema.findAndUpdate({ code: req.body.code }, { $set: { status: false } })
             .then(deleteProduct => {
                 return res.send({ status: 200, message: 'Product deleted successfully', process: 'deleteProductMaster' })
             })
