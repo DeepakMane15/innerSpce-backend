@@ -77,7 +77,7 @@ const addTransaction = async (req, res) => {
       });
     }
   } catch (err) {
-    console.log(err);
+    
     return res.send({
       status: 400,
       message: err,
@@ -89,8 +89,7 @@ const addTransaction = async (req, res) => {
 const getTransaction = async (req, res) => {
   try {
     let { subCategoryId, categoryId, productId } = req.query;
-    console.log(req.query)
-    console.log("asdasd ", (req.query.startDate))
+    
     let populateClientName = {
       path: 'clientName',
       model: 'Client'
@@ -165,11 +164,11 @@ const getTransaction = async (req, res) => {
         }
       })
       .catch((err) => {
-        console.log(err);
+        
         return res.send({ status: 400, message: err, process: "transactions" });
       });
   } catch (err) {
-    console.log(err);
+    
     return res.send({
       status: 400,
       message: err,

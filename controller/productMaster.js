@@ -1,4 +1,3 @@
-const multer = require('multer');
 const productMasterSchema = require('../models/product-master');
 const sizeSchema = require('../models/size-master');
 const mongoose = require('mongoose');
@@ -7,16 +6,11 @@ const subCategorySchema = require('../models/subCategory-master');
 const categorySchema = require('../models/category-master');
 const clientSchema = require('../models/client-master')
 
-// var multer      = require('multer');
-
-
-
 const addProductMaster = async (req, res) => {
     try {
-        console.log(req.body);
 
         const { size } = await sizeSchema.findOne({ categoryId: new mongoose.Types.ObjectId(req.body.categoryId) }, { size: 1, _id: 0 }).lean();
-        console.log(size)
+
         if (size.length > 0) {
             let bulkSave = [];
             const data = {
@@ -33,20 +27,14 @@ const addProductMaster = async (req, res) => {
                 bulkSave.push(saveProduct);
             });
 
-            // const result = await bulkSave.save()
-
             const result = await productMasterSchema.bulkSave(bulkSave);
 
             return res.send({ status: 200, message: result, process: 'product' })
-            //    if(result) {
-
-            //    }
-
-
+           
         }
     }
     catch (err) {
-        console.log(err)
+        
         return res.send({
             status: 400, message: err, process: 'product'
         });
@@ -62,14 +50,14 @@ const updateProduct = async (req, res) => {
             })
 
             .catch(err => {
-                console.log(err)
+                
                 return res.send({
                     status: 400, message: err, process: 'product'
                 });
             })
     }
     catch (err) {
-        console.log(err)
+        
         return res.send({
             status: 400, message: err, process: 'product'
         });
@@ -98,12 +86,12 @@ const getProductMaster = async (req, res) => {
                 }
             })
             .catch(err => {
-                console.log(err)
+                
                 return res.send({ status: 400, message: err, process: 'products' })
             })
     }
     catch (err) {
-        console.log(err)
+        
         return res.send({
             status: 400, message: err, process: 'products'
         });
@@ -118,13 +106,13 @@ const updateProductMaster = async (req, res) => {
             categoryId: req.body.categoryId,
             subCategoryId: req.body.subCategoryId
         }
-        console.log(update, req.body.id);
-        productMasterSchema.findOneAndUpdate({ code: req.body.code }, { $set: update })
+        
+        productMasterSchema.updateMany({ code: req.body.code }, { $set: update })
             .then(update => {
                 return res.send({ status: 200, message: "Product updated successfully", process: 'updateProductMaster' })
             })
             .catch(err => {
-                console.log(err)
+                
 
                 return res.send({
                     status: 400, message: err, process: 'updateProductMaster'
@@ -132,7 +120,7 @@ const updateProductMaster = async (req, res) => {
             })
     }
     catch (err) {
-        console.log(err)
+        
 
         return res.send({
             status: 400, message: err, process: 'updateProductMaster'
@@ -147,15 +135,13 @@ const deleteProductMaster = async (req, res) => {
                 return res.send({ status: 200, message: 'Product deleted successfully', process: 'deleteProductMaster' })
             })
             .catch(err => {
-                console.log(err)
-
                 return res.send({
-                    status: 400, message: err, process: 'deleteProductMaster'
+                    status: 400, message: "Unexpected Error Occured", process: 'deleteProductMaster'
                 });
             })
     }
     catch (err) {
-        console.log(err)
+        
 
         return res.send({
             status: 400, message: err, process: 'deleteProductMaster'
@@ -182,8 +168,7 @@ const bulkUpload = (req, res) => {
                                 for (var i = 0; i < source.length; i++) {
                                     let categoryId = await getIdByName(source[i]["category"], categories);
                                     let subCategoryId = await getIdByName(source[i]["subCategory"], subCategories);
-                                    // console.log(categoryId);
-                                    // console.log(subCategoryId)
+                                   
                                     if (!categoryId || !subCategoryId) {
                                         return res.send({ status: 400, data: [source[i]["category"], source[i]["subCategory"]], message: 'Invalid Category or subCategory added at index ' + i, process: 'category' })
                                     }
@@ -204,8 +189,6 @@ const bulkUpload = (req, res) => {
                                         };
                                         arrayToInsert.push(singleRow);
                                     })
-
-                                    console.log(arrayToInsert);
                                 }
                                 productMasterSchema.insertMany(arrayToInsert)
                                     .then(products => {
@@ -218,7 +201,7 @@ const bulkUpload = (req, res) => {
 
                         })
                         .catch(err => {
-                            console.log(err)
+                            
                             return res.send({ status: 400, message: err, process: 'ProductMaster' })
                         })
 
@@ -227,13 +210,13 @@ const bulkUpload = (req, res) => {
                 }
             })
             .catch(err => {
-                console.log(err)
+                
                 return res.send({ status: 400, message: err, process: 'ProductMaster' })
             })
 
     }
     catch (err) {
-        console.log(err)
+        
         return res.send({
             status: 400, message: err, process: 'products'
         });

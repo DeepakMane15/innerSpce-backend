@@ -20,14 +20,10 @@ const addclient = async (req, res) => {
             })
             .catch(err => {
                 res.send({ status: 400, data: err, process: "client" })
-                console.log(err)
-
             })
-
-
     }
     catch (err) {
-        console.log(err)
+
         return res.send({
             status: 400, message: err, process: 'client'
         });
@@ -45,12 +41,12 @@ const getclients = async (req, res) => {
                 }
             })
             .catch(err => {
-                console.log(err)
+
                 return res.send({ status: 400, message: err, process: 'client' })
             })
     }
     catch (err) {
-        console.log(err)
+
         return res.send({
             status: 400, message: err, process: 'client'
         });
@@ -72,16 +68,12 @@ const updateClient = async (req, res) => {
                 return res.send({ status: 200, message: "Client Updated Successfully", process: 'updateClients' })
             })
             .catch(err => {
-                console.log(err)
-
                 return res.send({
                     status: 400, message: err, process: 'updateClients'
                 });
             })
     }
     catch (err) {
-        console.log(err)
-
         return res.send({
             status: 400, message: err, process: 'updateClients'
         });
@@ -95,16 +87,12 @@ const deleteClient = async (req, res) => {
                 return res.send({ status: 200, message: 'Client deleted successfully', process: 'deleteClients' })
             })
             .catch(err => {
-                console.log(err)
-
                 return res.send({
                     status: 400, message: err, process: 'deleteClients'
                 });
             })
     }
     catch (err) {
-        console.log(err)
-
         return res.send({
             status: 400, message: err, process: 'deleteClients'
         });

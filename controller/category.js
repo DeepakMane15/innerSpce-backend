@@ -15,14 +15,14 @@ const addCategory = async (req, res) => {
             })
             .catch(err => {
                 res.send({ status: 400, data: err, process: "category" })
-                console.log(err)
+                
 
             })
 
 
     }
     catch (err) {
-        console.log(err)
+        
         return res.send({
             status: 400, message: err, process: 'category'
         });
@@ -33,7 +33,7 @@ const getCategories = async (req, res) => {
     try {
         categorySchema.find({ status: true })
             .then(async category => {
-                console.log(category)
+                
                 if (category) {
                     return res.send({ status: 200, data: category, process: 'category' })
                 } else {
@@ -41,12 +41,12 @@ const getCategories = async (req, res) => {
                 }
             })
             .catch(err => {
-                console.log(err)
+                
                 return res.send({ status: 400, message: err, process: 'category' })
             })
     }
     catch (err) {
-        console.log(err)
+        
         return res.send({
             status: 400, message: err, process: 'category'
         });
@@ -58,21 +58,18 @@ const updateCategory = async (req, res) => {
         const update = {
             name: req.body.name,
         }
-        console.log(update, req.body.id);
         categorySchema.findOneAndUpdate({ _id: new mongoose.Types.ObjectId(req.body.id) }, { $set: update })
             .then(update => {
                 return res.send({ status: 200, message: "Category Updated Successfully", process: 'updateCategory' })
             })
             .catch(err => {
-                console.log(err)
-
+                
                 return res.send({
                     status: 400, message: err, process: 'updateCategory'
                 });
             })
     }
     catch (err) {
-        console.log(err)
 
         return res.send({
             status: 400, message: err, process: 'updateCategory'
@@ -87,7 +84,6 @@ const deleteCategory = async (req, res) => {
                 return res.send({ status: 200, message: 'Category deleted successfully', process: 'deleteCategory' })
             })
             .catch(err => {
-                console.log(err)
 
                 return res.send({
                     status: 400, message: err, process: 'deleteCategory'
@@ -95,7 +91,6 @@ const deleteCategory = async (req, res) => {
             })
     }
     catch (err) {
-        console.log(err)
 
         return res.send({
             status: 400, message: err, process: 'deleteCategory'

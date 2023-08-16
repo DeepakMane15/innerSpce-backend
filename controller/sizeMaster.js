@@ -20,15 +20,13 @@ const addSize = async (req, res) => {
                         })
                         .catch(err => {
                             res.send({ status: 400, data: err, process: "size" })
-                            console.log(err)
-
                         })
                 }
             })
 
     }
     catch (err) {
-        console.log(err)
+        
         return res.send({
             status: 400, message: err, process: 'size'
         });
@@ -55,12 +53,12 @@ const getSizes = async (req, res) => {
                 }
             })
             .catch(err => {
-                console.log(err)
+                
                 return res.send({ status: 400, message: err, process: 'size' })
             })
     }
     catch (err) {
-        console.log(err)
+        
         return res.send({
             status: 400, message: err, process: 'size'
         });

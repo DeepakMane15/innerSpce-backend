@@ -3,7 +3,6 @@ const mongoose = require('mongoose');
 
 const addSubCategory = async (req, res) => {
     try {
-
         const subCategory = new subCategorySchema({
             name: req.body.name,
             categoryId: req.body.categoryId
@@ -15,14 +14,12 @@ const addSubCategory = async (req, res) => {
             })
             .catch(err => {
                 res.send({ status: 400, data: err, process: "category" })
-                console.log(err)
-
             })
 
 
     }
     catch (err) {
-        console.log(err)
+        
         return res.send({
             status: 400, message: err, process: 'category'
         });
@@ -49,12 +46,12 @@ const getSubCategories = async (req, res) => {
                 }
             })
             .catch(err => {
-                console.log(err)
+                
                 return res.send({ status: 400, message: err, process: 'subCategorySchema' })
             })
     }
     catch (err) {
-        console.log(err)
+        
         return res.send({
             status: 400, message: err, process: 'subCategorySchema'
         });
@@ -73,7 +70,7 @@ const updateSubCategory = async (req, res) => {
                 return res.send({ status: 200, message: "SubCategory Updated Successfully", process: 'updateSubCategory' })
             })
             .catch(err => {
-                console.log(err)
+                
 
                 return res.send({
                     status: 400, message: err, process: 'updateSubCategory'
@@ -81,7 +78,7 @@ const updateSubCategory = async (req, res) => {
             })
     }
     catch (err) {
-        console.log(err)
+        
 
         return res.send({
             status: 400, message: err, process: 'updateSubCategory'
@@ -96,16 +93,14 @@ const deleteSubCategory = async (req, res) => {
                 return res.send({ status: 200, message: 'SubCategory deleted successfully', process: 'deleteSubCategory' })
             })
             .catch(err => {
-                console.log(err)
-
+                
                 return res.send({
                     status: 400, message: err, process: 'deleteSubCategory'
                 });
             })
     }
     catch (err) {
-        console.log(err)
-
+        
         return res.send({
             status: 400, message: err, process: 'deleteSubCategory'
         });

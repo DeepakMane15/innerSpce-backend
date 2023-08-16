@@ -69,7 +69,6 @@ const signIn = async (req, res) => {
                 }
             })
             .catch((err) => {
-                console.log(err)
                 res.send({ status: 400, message: err, process: 'signIn' })
             })
 

@@ -27,7 +27,9 @@ const addStock = async (data) => {
                                 console.log(stock)
                             })
                                 .catch(err => {
-                                    console.log(err)
+                                    return ({
+                                        status: 400, message: err, process: 'stock'
+                                    });
                                 })
                         }
                     })
@@ -36,7 +38,7 @@ const addStock = async (data) => {
         })
     }
     catch (err) {
-        console.log(err)
+
         return ({
             status: 400, message: err, process: 'stock'
         });
@@ -93,12 +95,12 @@ const getStocks1 = async (req, res) => {
                 }
             })
             .catch(err => {
-                console.log(err)
+
                 return res.send({ status: 400, message: err, process: 'stock' })
             })
     }
     catch (err) {
-        console.log(err)
+
         return res.send({
             status: 400, message: err, process: 'stock'
         });
@@ -178,12 +180,12 @@ const getStocks = async (req, res) => {
                 }
             })
             .catch(err => {
-                console.log(err)
+
                 return res.send({ status: 400, message: err, process: 'stock' })
             })
     }
     catch (err) {
-        console.log(err)
+
         return res.send({
             status: 400, message: err, process: 'stock'
         });
