@@ -78,31 +78,6 @@ const updateProduct = async (req, res) => {
 
 const getProductMaster = async (req, res) => {
     try {
-        // productMasterSchema.aggregate([
-        //     {
-        //         $lookup: {
-        //             from: "categories",
-        //             localField: "categoryId",
-        //             foreignField: "_id",
-        //             as: "category"
-        //         }
-        //     }, {
-        //         $unwind: {
-        //             path: "$category",
-        //             preserveNullAndEmptyArrays: true
-        //         }
-        //     }, {
-        //         $project: {
-        //             "ProductName": "$product.name",
-        //             "_id": 1,
-        //             "productId": 1,
-        //             "quantity": 1,
-        //             "size": "$product.size"
-        //         }
-        //     }
-        // ])
-
-
         productMasterSchema.find({ status: 1 }).populate([{ path: 'categoryId', model: 'Category', select: { name: 1, _id: 1 } }, { path: 'subCategoryId', model: 'SubCategory', select: { name: 1, _id: 1 } }])
             .then(async products => {
 
@@ -167,7 +142,7 @@ const updateProductMaster = async (req, res) => {
 
 const deleteProductMaster = async (req, res) => {
     try {
-        productMasterSchema.findOneAndUpdate({ _id: new mongoose.Types.ObjectId(req.body.id) }, { $set: { status: false } })
+        productMasterSchema.findOneAndUpdate({ code: req.body.code }, { $set: { status: false } })
             .then(deleteProduct => {
                 return res.send({ status: 200, message: 'Product deleted successfully', process: 'deleteProductMaster' })
             })
