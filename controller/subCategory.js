@@ -19,7 +19,7 @@ const addSubCategory = async (req, res) => {
 
     }
     catch (err) {
-        
+
         return res.send({
             status: 400, message: err, process: 'category'
         });
@@ -36,6 +36,11 @@ const getSubCategories = async (req, res) => {
                     foreignField: '_id',
                     as: 'categoryId'
                 }
+            },
+            {
+                '$match': {
+                    'status': true
+                }
             }
         ])
             .then(async category => {
@@ -46,12 +51,12 @@ const getSubCategories = async (req, res) => {
                 }
             })
             .catch(err => {
-                
+
                 return res.send({ status: 400, message: err, process: 'subCategorySchema' })
             })
     }
     catch (err) {
-        
+
         return res.send({
             status: 400, message: err, process: 'subCategorySchema'
         });
@@ -70,7 +75,7 @@ const updateSubCategory = async (req, res) => {
                 return res.send({ status: 200, message: "SubCategory Updated Successfully", process: 'updateSubCategory' })
             })
             .catch(err => {
-                
+
 
                 return res.send({
                     status: 400, message: err, process: 'updateSubCategory'
@@ -78,7 +83,7 @@ const updateSubCategory = async (req, res) => {
             })
     }
     catch (err) {
-        
+
 
         return res.send({
             status: 400, message: err, process: 'updateSubCategory'
@@ -93,14 +98,14 @@ const deleteSubCategory = async (req, res) => {
                 return res.send({ status: 200, message: 'SubCategory deleted successfully', process: 'deleteSubCategory' })
             })
             .catch(err => {
-                
+
                 return res.send({
                     status: 400, message: err, process: 'deleteSubCategory'
                 });
             })
     }
     catch (err) {
-        
+
         return res.send({
             status: 400, message: err, process: 'deleteSubCategory'
         });
