@@ -16,6 +16,7 @@ const addProductMaster = async (req, res) => {
             const data = {
                 name: req.body.name,
                 code: req.body.code,
+                packingType: req.body.packingType,
                 categoryId: req.body.categoryId,
                 subCategoryId: req.body.subCategoryId
             }
@@ -30,11 +31,11 @@ const addProductMaster = async (req, res) => {
             const result = await productMasterSchema.bulkSave(bulkSave);
 
             return res.send({ status: 200, message: result, process: 'product' })
-           
+
         }
     }
     catch (err) {
-        
+
         return res.send({
             status: 400, message: err, process: 'product'
         });
@@ -50,14 +51,14 @@ const updateProduct = async (req, res) => {
             })
 
             .catch(err => {
-                
+
                 return res.send({
                     status: 400, message: err, process: 'product'
                 });
             })
     }
     catch (err) {
-        
+
         return res.send({
             status: 400, message: err, process: 'product'
         });
@@ -86,12 +87,12 @@ const getProductMaster = async (req, res) => {
                 }
             })
             .catch(err => {
-                
+
                 return res.send({ status: 400, message: err, process: 'products' })
             })
     }
     catch (err) {
-        
+
         return res.send({
             status: 400, message: err, process: 'products'
         });
@@ -106,13 +107,13 @@ const updateProductMaster = async (req, res) => {
             categoryId: req.body.categoryId,
             subCategoryId: req.body.subCategoryId
         }
-        
+
         productMasterSchema.updateMany({ code: req.body.code }, { $set: update })
             .then(update => {
                 return res.send({ status: 200, message: "Product updated successfully", process: 'updateProductMaster' })
             })
             .catch(err => {
-                
+
 
                 return res.send({
                     status: 400, message: err, process: 'updateProductMaster'
@@ -120,7 +121,7 @@ const updateProductMaster = async (req, res) => {
             })
     }
     catch (err) {
-        
+
 
         return res.send({
             status: 400, message: err, process: 'updateProductMaster'
@@ -141,7 +142,7 @@ const deleteProductMaster = async (req, res) => {
             })
     }
     catch (err) {
-        
+
 
         return res.send({
             status: 400, message: err, process: 'deleteProductMaster'
@@ -166,9 +167,16 @@ const bulkUpload = (req, res) => {
                             await csvtojson().fromFile(filePath).then(async source => {
                                 // Fetching the all data from each row
                                 for (var i = 0; i < source.length; i++) {
+
+                                    // check if valid packing type is provided
+
+                                    if (source[i]["packing"] != 'Nos' || source[i]["packing"] != 'Set' || source[i]["packing"] != 'Mtr') {
+                                        return res.send({ status: 400, data: source[i]["packing"], message: 'Invalid Packing type at index ' + i, process: 'category' })
+                                    }
+
                                     let categoryId = await getIdByName(source[i]["category"], categories);
                                     let subCategoryId = await getIdByName(source[i]["subCategory"], subCategories);
-                                   
+
                                     if (!categoryId || !subCategoryId) {
                                         return res.send({ status: 400, data: [source[i]["category"], source[i]["subCategory"]], message: 'Invalid Category or subCategory added at index ' + i, process: 'category' })
                                     }
@@ -201,7 +209,7 @@ const bulkUpload = (req, res) => {
 
                         })
                         .catch(err => {
-                            
+
                             return res.send({ status: 400, message: err, process: 'ProductMaster' })
                         })
 
@@ -210,13 +218,13 @@ const bulkUpload = (req, res) => {
                 }
             })
             .catch(err => {
-                
+
                 return res.send({ status: 400, message: err, process: 'ProductMaster' })
             })
 
     }
     catch (err) {
-        
+
         return res.send({
             status: 400, message: err, process: 'products'
         });

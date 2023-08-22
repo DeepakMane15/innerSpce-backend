@@ -11,6 +11,10 @@ const productMasterSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    packingType: {
+        type: String,
+        required: true
+    },
     categoryId:
     {
         type: mongoose.Schema.ObjectId,
