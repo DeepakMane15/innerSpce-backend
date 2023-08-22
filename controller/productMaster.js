@@ -37,7 +37,7 @@ const addProductMaster = async (req, res) => {
     catch (err) {
 
         return res.send({
-            status: 400, message: err, process: 'product'
+            status: 400, message: JSON.stringify(err), process: 'product'
         });
     }
 }
