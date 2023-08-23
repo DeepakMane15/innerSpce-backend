@@ -11,7 +11,7 @@ const addProductMaster = async (req, res) => {
 
         const { size } = await sizeSchema.findOne({ categoryId: new mongoose.Types.ObjectId(req.body.categoryId) }, { size: 1, _id: 0 }).lean();
 
-        if (size.length > 0) {
+        if (size && size.length > 0) {
             let bulkSave = [];
             const data = {
                 name: req.body.name,
@@ -31,6 +31,9 @@ const addProductMaster = async (req, res) => {
             const result = await productMasterSchema.bulkSave(bulkSave);
 
             return res.send({ status: 200, message: result, process: 'product' })
+
+        } else {
+            return res.send({ status: 200, message: "Size for this category are not set", process: 'product' })
 
         }
     }
@@ -106,7 +109,8 @@ const updateProductMaster = async (req, res) => {
             name: req.body.name,
             // code: req.body.code,
             categoryId: req.body.categoryId,
-            subCategoryId: req.body.subCategoryId
+            subCategoryId: req.body.subCategoryId,
+            packingType: req.body.packingType,
         }
 
         productMasterSchema.updateMany({ code: req.body.code }, { $set: update })
