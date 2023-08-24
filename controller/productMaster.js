@@ -174,8 +174,6 @@ const bulkUpload = (req, res) => {
                                 for (var i = 0; i < source.length; i++) {
 
                                     // check if valid packing type is provided
-                                    console.log(source[i]["packing"])
-
                                     if (source[i]["packing"] != 'Nos' && source[i]["packing"] != 'Set' && source[i]["packing"] != 'Mtr') {
                                         return res.send({ status: 400, data: source[i]["packing"], message: 'Invalid Packing type at index ' + i, process: 'category' })
                                     }
@@ -196,6 +194,7 @@ const bulkUpload = (req, res) => {
                                         var singleRow = {
                                             categoryId: categoryId,
                                             subCategoryId: subCategoryId,
+                                            packingType: source[i]["packing"],
                                             code: source[i]["code"],
                                             name: source[i]["name"],
                                             size: s
