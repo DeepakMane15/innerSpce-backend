@@ -24,7 +24,7 @@ const generateInvoice = async (req, res) => {
 
         console.log(logo);
         // read our invoice-template.html file using node fs module
-        const file = fs.readFileSync(`${protocol}://${host}/views/invoice-template.html`, 'utf8');
+        const file = fs.readFileSync('./views/invoice-template.html', 'utf8');
 
         // console.log(file);
 
