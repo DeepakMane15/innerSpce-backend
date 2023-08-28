@@ -22,6 +22,7 @@ const generateInvoice = async (req, res) => {
         const tline = `${protocol}://${host}/images/tline.png`;
         const kb = `${protocol}://${host}/images/kb.png`;
 
+        console.log(logo);
         // read our invoice-template.html file using node fs module
         const file = fs.readFileSync('./views/invoice-template.html', 'utf8');
 
