@@ -18,9 +18,9 @@ const generateInvoice = async (req, res) => {
         const protocol = req.headers['x-forwarded-proto'] || 'http';
         // return `${protocol}://${host}/images/${relativePath}`;
 
-        const logo = "http://localhost:3100/images/Picture.png";
-        const tline = "http://localhost:3100/images/tline.png";
-        const kb = "http://localhost:3100/images/kb.png";
+        const logo = `${protocol}://${host}/images/Picture.png`;
+        const tline = `${protocol}://${host}/images/tline.png`;
+        const kb = `${protocol}://${host}/images/kb.png`;
 
         // read our invoice-template.html file using node fs module
         const file = fs.readFileSync('./views/invoice-template.html', 'utf8');
