@@ -3,7 +3,7 @@ var router = express.Router();
 
 const { requireSignin } = require('../middleware');
 const { addProductMaster, getProductMaster } = require('../controller/productMaster');
-const { addTransaction, getTransaction, getTransactionById } = require('../controller/invoice');
+const { addTransaction, getTransaction, getTransactionById, deleteTransactionById } = require('../controller/invoice');
 const { generateInvoice } = require('../controller/invoiceGenerator');
 
 
@@ -13,6 +13,8 @@ router.get('/get', requireSignin, getTransaction);
 router.get('/get/:id', requireSignin, getTransactionById);
 
 router.post('/download-invoice', requireSignin, generateInvoice);
+
+router.get('/deleteTransaction/:id', requireSignin, deleteTransactionById);
 
 // router.get('/get/:categoryId/:subCategoryId/:productId', requireSignin, getTransaction);
 

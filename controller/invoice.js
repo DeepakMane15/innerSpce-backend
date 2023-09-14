@@ -13,6 +13,8 @@ const addTransaction = async (req, res) => {
       invoiceDate: req.body.invoiceDate,
       type: req.body.type,
       products: req.body.products,
+      // isSegregated: req.body.isSegregated,
+      // segregatedFrom: req.body.segregatedFrom || null
     });
 
     const transactionSave = await Transaction.save();
@@ -77,7 +79,7 @@ const addTransaction = async (req, res) => {
       });
     }
   } catch (err) {
-    
+
     return res.send({
       status: 400,
       message: err,
@@ -89,7 +91,7 @@ const addTransaction = async (req, res) => {
 const getTransaction = async (req, res) => {
   try {
     let { subCategoryId, categoryId, productId } = req.query;
-    
+
     let populateClientName = {
       path: 'clientName',
       model: 'Client'
@@ -126,7 +128,7 @@ const getTransaction = async (req, res) => {
     }
     populateProduct["populate"] = populateSubCategory;
 
-    
+
 
     let filterDate = {};
 
@@ -164,11 +166,11 @@ const getTransaction = async (req, res) => {
         }
       })
       .catch((err) => {
-        
+
         return res.send({ status: 400, message: err, process: "transactions" });
       });
   } catch (err) {
-    
+
     return res.send({
       status: 400,
       message: err,
@@ -245,4 +247,111 @@ const getTransactionById = async (req, res) => {
   }
 }
 
-module.exports = { addTransaction, getTransaction, getTransactionById };
+const deleteTransactionById = async (req, res) => {
+  try {
+
+    const invoiceStocks = await invoiceSchema.findOne({ _id: req.params.id });
+
+    if (invoiceStocks) {
+
+      const bulkWriteData = [];
+      invoiceStocks.products.forEach((stockUpdate) => {
+        let count = stockUpdate.quantity || 0;
+        if (invoiceStocks.type === "purchase") {
+          count = stockUpdate.quantity * -1;
+        }
+
+
+        if (stockUpdate.isSegregated) {
+          const segregatedFromProductUpdate = {
+            updateOne: {
+              filter: {
+                productId: new mongoose.Types.ObjectId(
+                  stockUpdate.from
+                ),
+              },
+              update: { $inc: { quantity: stockUpdate.quantity } },
+              upsert: false,
+            },
+          };
+          bulkWriteData.push(segregatedFromProductUpdate);
+          const segregatedToProductUpdate = {
+            updateOne: {
+              filter: {
+                productId: new mongoose.Types.ObjectId(
+                  stockUpdate.leftOver
+                ),
+              },
+              update: { $inc: { quantity: (stockUpdate.quantity * -1) } },
+              upsert: false,
+            },
+          };
+          bulkWriteData.push(segregatedToProductUpdate);
+        } else {
+          const data = {
+            updateOne: {
+              filter: {
+                productId: new mongoose.Types.ObjectId(
+                  stockUpdate.productId
+                ),
+              },
+              update: { $inc: { quantity: count } },
+              upsert: false,
+            },
+          };
+          bulkWriteData.push(data);
+        }
+
+      })
+      
+      if (bulkWriteData.length > 0) {
+        const updateStockCollection = await stockSchema.bulkWrite(
+          bulkWriteData
+        );
+        if (updateStockCollection) {
+
+          const deleteInvoice = await invoiceSchema.deleteOne({ _id: req.params.id });
+          if (deleteInvoice) {
+            return res.send({
+              status: 200,
+              message: "transaction deleted successfully",
+              data: updateStockCollection,
+            });
+          } else {
+            // rollback update query
+          }
+        } else {
+          return res.send({
+            status: 400,
+            message: "unexpected error occured",
+            process: "deleteTransactionById",
+          });
+        }
+      }
+      else {
+        return res.send({
+          status: 400,
+          message: "Unexpected error occured",
+          process: "deleteTransactionById",
+        });
+      }
+
+
+    } else {
+      return res.send({
+        status: 400,
+        message: "Invoice does not exist",
+        process: "deleteTransactionById",
+      });
+    }
+  }
+  catch (err) {
+    return res.send({
+      status: 400,
+      message: err,
+      process: "deleteTransactionById",
+    });
+  }
+}
+
+module.exports = { addTransaction, getTransaction, getTransactionById, deleteTransactionById };
