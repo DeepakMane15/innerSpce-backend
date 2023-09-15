@@ -22,13 +22,13 @@ const clientSchema = new mongoose.Schema({
     state: {
         type: String,
         required: true,
-        unique: true,
+        unique: false,
         trim: true
     },
     contactNo: {
         type: Number,
         required: true,
-        unique: true,
+        unique: false,
         trim: true
     },
     status: { type: Boolean, default: 1 }
