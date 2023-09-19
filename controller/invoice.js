@@ -13,6 +13,8 @@ const addTransaction = async (req, res) => {
       invoiceDate: req.body.invoiceDate,
       type: req.body.type,
       products: req.body.products,
+      address:req.body.address,
+      contactNo:req.body.contactNo,
       // isSegregated: req.body.isSegregated,
       // segregatedFrom: req.body.segregatedFrom || null
     });
@@ -193,7 +195,10 @@ function processTransaction(transactions, product, subCategory, categoryId) {
           tempResult.invoiceNo = invoice.id;
           tempResult.type = invoice.type;
           tempResult.clientName = invoice.clientName.name;
-          tempResult.id = invoice._id
+          tempResult.id = invoice._id,
+          tempResult.address = invoice.address,
+          tempResult.contactNo = invoice.contactNo,
+          tempResult.gstNo = invoice.clientName.gstNo,
           tempResult.name = name;
           tempResult.code = code;
           tempResult.size = size;

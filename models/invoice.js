@@ -12,7 +12,13 @@ const invoiceSchema = new mongoose.Schema({
         isSegregated: { type: Boolean, required: false, default: false },
         from: { type: mongoose.Schema.ObjectId, required: false },
         leftOver: { type: mongoose.Schema.ObjectId, required: false }
-    }]
+    }],
+    address: {
+        type: String, required: true, trim: true
+    },
+    contactNo: {
+        type: Number, required: true, trim: true
+    }
 },
     { timestamp: true });
 
