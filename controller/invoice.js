@@ -191,17 +191,18 @@ function processTransaction(transactions, product, subCategory, categoryId) {
       const { quantity, productId } = data
       if (productId) {
         const { name, code, size, subCategoryId, packingType } = productId;
+        console.log("packingType is ", packingType)
         if (subCategoryId || subCategoryId?.categoryId) {
           tempResult.invoiceDate = invoice.invoiceDate;
           tempResult.invoiceNo = invoice.id;
           tempResult.type = invoice.type;
           tempResult.clientName = invoice.clientName.name;
-          tempResult.id = invoice._id,
-            tempResult.address = invoice.address,
-            tempResult.contactNo = invoice.contactNo,
-            tempResult.gstNo = invoice.clientName.gstNo,
-            tempResult.packingType = packingType,
-            tempResult.name = name;
+          tempResult.id = invoice._id;
+          tempResult.address = invoice.address;
+          tempResult.contactNo = invoice.contactNo;
+          tempResult.gstNo = invoice.clientName.gstNo;
+          tempResult.packingType = packingType;
+          tempResult.name = name;
           tempResult.code = code;
           tempResult.size = size;
           tempResult.quantity = quantity;
