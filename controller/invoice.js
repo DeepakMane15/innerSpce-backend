@@ -13,8 +13,8 @@ const addTransaction = async (req, res) => {
       invoiceDate: req.body.invoiceDate,
       type: req.body.type,
       products: req.body.products,
-      address:req.body.address,
-      contactNo:req.body.contactNo,
+      address: req.body.address,
+      contactNo: req.body.contactNo,
       // isSegregated: req.body.isSegregated,
       // segregatedFrom: req.body.segregatedFrom || null
     });
@@ -186,20 +186,22 @@ function processTransaction(transactions, product, subCategory, categoryId) {
   transactions.forEach(invoice => {
     const { products } = invoice;
     products.forEach(data => {
+      console.log("data", data);
       let tempResult = {}
       const { quantity, productId } = data
       if (productId) {
-        const { name, code, size, subCategoryId } = productId;
+        const { name, code, size, subCategoryId, packingType } = productId;
         if (subCategoryId || subCategoryId?.categoryId) {
           tempResult.invoiceDate = invoice.invoiceDate;
           tempResult.invoiceNo = invoice.id;
           tempResult.type = invoice.type;
           tempResult.clientName = invoice.clientName.name;
           tempResult.id = invoice._id,
-          tempResult.address = invoice.address,
-          tempResult.contactNo = invoice.contactNo,
-          tempResult.gstNo = invoice.clientName.gstNo,
-          tempResult.name = name;
+            tempResult.address = invoice.address,
+            tempResult.contactNo = invoice.contactNo,
+            tempResult.gstNo = invoice.clientName.gstNo,
+            tempResult.packingType = packingType,
+            tempResult.name = name;
           tempResult.code = code;
           tempResult.size = size;
           tempResult.quantity = quantity;
@@ -308,7 +310,7 @@ const deleteTransactionById = async (req, res) => {
         }
 
       })
-      
+
       if (bulkWriteData.length > 0) {
         const updateStockCollection = await stockSchema.bulkWrite(
           bulkWriteData
