@@ -15,8 +15,8 @@ const addTransaction = async (req, res) => {
       products: req.body.products,
       address: req.body.address,
       contactNo: req.body.contactNo,
-      // isSegregated: req.body.isSegregated,
-      // segregatedFrom: req.body.segregatedFrom || null
+      refNo: req.body.refNo,
+      refDate: req.body.refDate
     });
 
     const transactionSave = await Transaction.save();
