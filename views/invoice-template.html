@@ -43,6 +43,7 @@
 
         .subtext {
             font-size: 9px;
+            color: black;
             font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
         }
 
@@ -69,7 +70,7 @@
 
         table {
             border-collapse: collapse;
-            height: 400px;
+            height: 460px;
             border-bottom: 1px solid black;
         }
 
@@ -144,11 +145,11 @@
                 <div style="line-height: 18px; font-size: 14px; width:320px">
                     <span class="bold">M/s. Bolton Industries</span>
                     <br>
-                    Ganesh Nagar, Agra Road,
+                    Rajlaxmi Commercial Complexs asdas  asdasdasd asas,
                     <br>
-                    Near Telephone Office, Aligarh
+                    Building No. N, Unit No 10,11,
                     <br>
-                    Uttar Pradesh -202001
+                    12 Kalher Village, Bhiwandi 421302
                     <br>
                     <span class="bold">Contact Person : Mr Akhilesh Sharma- 9412757420</span>
                     <br>
@@ -195,7 +196,6 @@
             </div>
             <!-- sr table columns -->
             <div style="font-size: 13px; color:black;">
-
                 <table cellpadding="0" cellspacing="0">
                     <thead>
                         <tr class="top" style="border-bottom: 1px solid black;">
@@ -217,23 +217,24 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
+                        <tr key=${index}>
                             <td style="text-align: center;">
                                 1
                             </td>
-                            <td style="width: 380px;">
-                                SS304 Slider Lock
+                            <td
+                                style="width: 380px; padding-left:10px; ${index === challan.length - 1 ? null : 'height:10px'} ">
+                                asdas
                             </td>
                             <td style="width: 60px; text-align: center;">
-                                No
+                                Nos
                             </td>
                             <td style="width: 60px; text-align: center;">
-                                77.00
+                                12
                             </td>
                             <td style="width: 60px; text-align: center;">
-
                             </td>
                         </tr>
+
 
                     </tbody>
                 </table>
@@ -245,7 +246,7 @@
                     <div style=" border-bottom: 1px solid black;">
                         GSTIN : 2423423423234
                     </div>
-                    <div style="font-size: 10px; line-height: 16px;">
+                    <div style="font-size: 10px; line-height: 16px; color:black;">
                         Terms & Conditions:
                         <br>
                         1.Goods received in good condition as per order<br>
@@ -256,11 +257,11 @@
                     </div>
                 </div>
                 <div style="     flex-basis: 100%;
-                justify-content: center;
-                display: flex;
-                color:black;
-                font-size: 14px;
-                font-weight: bold;">
+            justify-content: center;
+            display: flex;
+            color:black;
+            font-size: 14px;
+            font-weight: bold;">
                     Receivers Signature
                 </div>
             </div>

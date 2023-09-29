@@ -186,12 +186,11 @@ function processTransaction(transactions, product, subCategory, categoryId) {
   transactions.forEach(invoice => {
     const { products } = invoice;
     products.forEach(data => {
-      console.log("data", data);
+
       let tempResult = {}
-      const { quantity, productId } = data
+      const { quantity, productId, customiseDesc, printableDesc, printableQty } = data
       if (productId) {
         const { name, code, size, subCategoryId, packingType } = productId;
-        console.log("packingType is ", packingType)
         if (subCategoryId || subCategoryId?.categoryId) {
           tempResult.invoiceDate = invoice.invoiceDate;
           tempResult.invoiceNo = invoice.id;
@@ -202,12 +201,18 @@ function processTransaction(transactions, product, subCategory, categoryId) {
           tempResult.contactNo = invoice.contactNo;
           tempResult.gstNo = invoice.clientName.gstNo;
           tempResult.packingType = packingType;
+          tempResult.customiseDesc = customiseDesc;
+          tempResult.printableDesc = printableDesc;
+          tempResult.printableQty = printableQty;
+          tempResult.refNo = invoice?.refNo;
+          tempResult.refDate = invoice?.refDate;
           tempResult.name = name;
           tempResult.code = code;
           tempResult.size = size;
           tempResult.quantity = quantity;
           tempResult.subCategory = subCategoryId.name;
           tempResult.category = subCategoryId.categoryId.name;
+
           result.push(tempResult);
         }
       }
