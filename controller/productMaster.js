@@ -9,39 +9,49 @@ const clientSchema = require('../models/client-master')
 const addProductMaster = async (req, res) => {
     try {
 
-        const { size } = await sizeSchema.findOne({ categoryId: new mongoose.Types.ObjectId(req.body.categoryId) }, { size: 1, _id: 0 }).lean();
+        const { hasSize } = await categorySchema.findOne({ _id: new mongoose.Types.ObjectId(req.body.categoryId) });
+        console.log(hasSize)
+        let bulkSave = [];
+        const data = {
+            name: req.body.name,
+            code: req.body.code,
+            packingType: req.body.packingType,
+            categoryId: req.body.categoryId,
+            subCategoryId: req.body.subCategoryId
+        }
 
-        if (size && size.length > 0) {
-            let bulkSave = [];
-            const data = {
-                name: req.body.name,
-                code: req.body.code,
-                packingType: req.body.packingType,
-                categoryId: req.body.categoryId,
-                subCategoryId: req.body.subCategoryId
+        if (hasSize) {
+            const { size } = await sizeSchema.findOne({ categoryId: new mongoose.Types.ObjectId(req.body.categoryId) }, { size: 1, _id: 0 }).lean();
+            if (size && size.length > 0) {
+                size.forEach(s => {
+                    const saveProduct = new productMasterSchema({
+                        ...data,
+                        size: s
+                    })
+                    bulkSave.push(saveProduct);
+                });
+
+                const result = await productMasterSchema.bulkSave(bulkSave);
+
+                return res.send({ status: 200, message: result, process: 'product' })
+
+            } else {
+                return res.send({ status: 200, message: "Size for this category are not set", process: 'product' })
+
             }
-            size.forEach(s => {
-                const saveProduct = new productMasterSchema({
-                    ...data,
-                    size: s
-                })
-                bulkSave.push(saveProduct);
-            });
-
-            const result = await productMasterSchema.bulkSave(bulkSave);
+        } else {
+            const saveProduct = new productMasterSchema(data)
+            const result = await saveProduct.save();
 
             return res.send({ status: 200, message: result, process: 'product' })
-
-        } else {
-            return res.send({ status: 200, message: "Size for this category are not set", process: 'product' })
-
         }
+
     }
     catch (err) {
         console.log(err);
 
         return res.send({
-            status: 400, message: JSON.stringify(err), process: 'product'
+            status: 400, message: err.message, process: 'product'
         });
     }
 }
@@ -178,30 +188,43 @@ const bulkUpload = (req, res) => {
                                         return res.send({ status: 400, data: source[i]["packing"], message: 'Invalid Packing type at index ' + i, process: 'category' })
                                     }
 
-                                    let categoryId = await getIdByName(source[i]["category"], categories);
-                                    let subCategoryId = await getIdByName(source[i]["subCategory"], subCategories);
+                                    let categoryData = await getIdByName(source[i]["category"], categories);
+                                    let subCategoryData = await getIdByName(source[i]["subCategory"], subCategories);
+
+                                    let categoryId = categoryData;
+                                    let subCategoryId = subCategoryData;
 
                                     if (!categoryId || !subCategoryId) {
                                         return res.send({ status: 400, data: [source[i]["category"], source[i]["subCategory"]], message: 'Invalid Category or subCategory added at index ' + i, process: 'category' })
                                     }
+                                    var filterSize = []
+                                    if (categoryData.hasSize) {
+                                        filterSize = size.filter(s => s.categoryId.equals(categoryId));
+                                        if (filterSize.length === 0) {
+                                            return res.send({ status: 400, message: "Sizes dont exist for category " + source[i]["category"], process: 'ProductMaster' })
+                                        }
+                                        filterSize[0].size.map(s => {
+                                            var singleRow = {
+                                                categoryId: categoryId,
+                                                subCategoryId: subCategoryId,
+                                                packingType: source[i]["packing"],
+                                                code: source[i]["code"],
+                                                name: source[i]["name"],
+                                                size: s
 
-                                    let filterSize = await size.filter(s => s.categoryId.equals(categoryId));
-                                    if (filterSize.length === 0) {
-                                        return res.send({ status: 400, message: "Sizes dont exist for category " + source[i]["category"], process: 'ProductMaster' })
-
-                                    }
-                                    filterSize[0].size.map(s => {
+                                            };
+                                            arrayToInsert.push(singleRow);
+                                        })
+                                    } else {
                                         var singleRow = {
                                             categoryId: categoryId,
                                             subCategoryId: subCategoryId,
                                             packingType: source[i]["packing"],
                                             code: source[i]["code"],
                                             name: source[i]["name"],
-                                            size: s
-
                                         };
                                         arrayToInsert.push(singleRow);
-                                    })
+                                    }
                                 }
                                 productMasterSchema.insertMany(arrayToInsert)
                                     .then(products => {
@@ -239,7 +262,7 @@ const bulkUpload = (req, res) => {
 const getIdByName = async (name, collection) => {
     let id = await collection.filter(c => c.name === name);
     if (id.length > 0)
-        return id[0]._id;
+        return id[0];
 
     return null;
 
