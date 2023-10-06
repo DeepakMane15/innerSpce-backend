@@ -9,7 +9,8 @@ const signUp = async (req, res) => {
             firstName: req.body.firstName,
             lastName: req.body.lastName,
             userName: req.body.userName,
-            password: req.body.password
+            password: req.body.password,
+            role: req.body.role
         })
 
         userSchema.findOne({ userName: req.body.userName })
