@@ -4,30 +4,30 @@ const moment = require("moment");
 // import puppeteer from 'puppeteer-core';
 // import chromium from '@sparticuz/chromium';
 // const test = require("node:test");
-const puppeteer = require("puppeteer-core");
-const chromium = require("@sparticuz/chromium");
+const puppeteer = require("puppeteer");
+// const chromium = require("@sparticuz/chromium");
 
 
 
 const generateInvoice = async (req, res) => {
-  const { challan } = req.body;
+    const { challan } = req.body;
 
-  // console.log(challan);
+    // console.log(challan);
 
-  // return;
+    // return;
 
-  try {
-    // read our invoice-template.html file using node fs module
-    // const file = fs.readFileSync('./src/views/template/invoice-template.html', 'utf8');
+    try {
+        // read our invoice-template.html file using node fs module
+        // const file = fs.readFileSync('./src/views/template/invoice-template.html', 'utf8');
 
-    const products = challan.map((product, index) => (
-      ` <tr key=${index}>
+        const products = challan.map((product, index) => (
+            ` <tr key=${index}>
           <td style="text-align: center;">
             ${index + 1}
           </td>
           <td style="width: 380px; padding-left:10px; ${index === challan.length - 1 ? null : 'height:10px'} ">
           ${product.customiseDesc ? product.printableDesc : product.category != 'Others' && (product.category + ' ') + product.name + ' ' + product.size}
-          </td >
+          </td>
           <td style="width: 60px; text-align: center;">
             ${product.packingType}
           </td>
@@ -36,31 +36,54 @@ const generateInvoice = async (req, res) => {
           </td>
           <td style="width: 60px; text-align: center;">
           </td>
-        </tr >
-  `
-    ))
+        </tr>
+        `
+        ))
 
 
-    function formatAddress(address) {
-      let lines = address.split(', ');
-      let formattedLines = [];
+        function formatAddress(address) {
+            // let lines = address.split(', ');
+            // let formattedLines = [];
 
-      for (let i = 0; i < 3; i++) {
-        if (i < 2) {
-          formattedLines.push(lines[i] + ',');
+            // for (let i = 0; i < 3; i++) {
+            //     if (i < 2) {
+            //         formattedLines.push(lines[i] + ',');
+            //     } else {
+            //         formattedLines.push(lines[i]);
+            //     }
+            // }
+
+            // return formattedLines.join('<br>');
+            
+              const MAX_LINE_LENGTH = 40;
+    let lines = [];
+    let currentLine = "";
+
+    address.split(' ').forEach(word => {
+        if (currentLine.length + word.length <= MAX_LINE_LENGTH) {
+            currentLine += (word + " ");
         } else {
-          formattedLines.push(lines[i]);
+            lines.push(currentLine.trim());
+            currentLine = word + " ";
         }
-      }
+    });
 
-      return formattedLines.join('<br>');
-    }
+    // Add the last line
+    lines.push(currentLine.trim());
+
+    // Join the lines with <br> tags
+    let formattedAddress = lines.join('<br>');
+
+    // Print the formatted address
+    return formattedAddress;
+
+        }
 
 
-    const clientAddress = formatAddress(challan[0]?.address);
-    console.log(clientAddress);
+        const clientAddress = formatAddress(challan[0]?.address);
+        console.log(clientAddress);
 
-    const file = `
+        const file = `
     <!DOCTYPE html>
 <html lang="en">
 
@@ -209,22 +232,22 @@ const generateInvoice = async (req, res) => {
           <br>
           ${clientAddress}
           <br>
-          <span class="bold">STATE :${challan[0].state}</span>
+          <span>STATE :${challan[0].state}</span>
           <br>
           <span class="bold"> GSTIN.:${challan[0].gstNo}</span>
           <br>
           <span class="bold">Contact Person : Mr Akhilesh Sharma- ${challan[0].contactNo}</span>
         </div>
         <div style=" border-left: 1px solid black; padding-left: 10px;">
-          <div style="display: flex; ">
+          <div style="display: flex; font-size: 14px;">
             <div class="bold" style="width: 100px;">
               Challan No
             </div>
-            <div>
+            <div class="bold">
               : ${challan[0].invoiceNo}
             </div>
           </div>
-          <div style="display: flex; ">
+          <div style="display: flex;font-size: 14px;margin-top: 10px; ">
             <div style="width: 100px;">
               Date
             </div>
@@ -233,7 +256,7 @@ const generateInvoice = async (req, res) => {
             </div>
           </div>
           ${challan[0].type === 'sell' ? (
-        `<div style="display: flex; ">
+          `<div style="display: flex; font-size: 14px;margin-top: 10px; ">
                         <div className="bold" style="width: 100px;">
                             Ref No.
                         </div>
@@ -242,7 +265,7 @@ const generateInvoice = async (req, res) => {
                         </div>
                     </div>
 
-                    <div style="display: flex; ">
+                    <div style="display: flex;font-size: 14px;margin-top: 10px; ">
                         <div className="bold" style="width: 100px;">
                             Date
                         </div>
@@ -250,7 +273,7 @@ const generateInvoice = async (req, res) => {
                             : ${moment(challan[0].refDate).format("DD/MM/YYYY")}
                         </div>
                     </div>`
-      ) : (`
+            ) : (`
             <div>
             </div>
             `)}
@@ -319,82 +342,88 @@ const generateInvoice = async (req, res) => {
 </html>
     `
 
-    const host = req.headers.host;
-    const protocol = req.headers['x-forwarded-proto'] || 'http'
+        const host = req.headers.host;
+        const protocol = req.headers['x-forwarded-proto'] || 'http'
 
 
 
-    chromium.setHeadlessMode = true;
+        // chromium.setHeadlessMode = true;
 
-    // Optional: If you'd like to disable webgl, true is the default.
-    chromium.setGraphicsMode = false;
+        // Optional: If you'd like to disable webgl, true is the default.
+        // chromium.setGraphicsMode = false;
 
-    const template = handlers.compile(`${file}`);
+        const template = handlers.compile(`${file}`);
 
-    const logo = protocol + '://' + host + '/images/logos/Picture.png';
-    const kb = protocol + '://' + host + '/images/logos/kb.png';
-    const tline = protocol + '://' + host + '/images/logos/tline.png';
+        const logo = protocol + '://' + host + '/images/logos/Picture.png';
+        const kb = protocol + '://' + host + '/images/logos/kb.png';
+        const tline = protocol + '://' + host + '/images/logos/tline.png';
 
-    const html = template({ challan, logo, tline, kb, products });
+        const html = template({ challan, logo, tline, kb, products });
 
-    // simulate a chrome browser with puppeteer and navigate to a new page
-    // const browser = await puppeteer.launch();
+        // simulate a chrome browser with puppeteer and navigate to a new page
+        // const browser = await puppeteer.launch();
 
-    // const browser = await puppeteer.launch({
-    //   executablePath: puppeteer.executablePath(),
-    // });
-    const browser = await puppeteer.launch({
-      args: chromium.args,
-      defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath(),
-      headless: chromium.headless,
-    });
+        // const browser = await puppeteer.launch({
+        //   executablePath: puppeteer.executablePath(),
+        // });
+        // const browser = await puppeteer.launch({
+        //     args: chromium.args,
+        //     defaultViewport: chromium.defaultViewport,
+        //     executablePath: await chromium.executablePath(),
+        //     headless: chromium.headless,
+        // });
+        // const browser = await puppeteer.launch();
+        
+        const browser = await puppeteer.launch({
+            args: ['--no-sandbox'],
+            headless: true
+        });
 
-    const page = await browser.newPage();
+        const page = await browser.newPage();
 
-    // set our compiled html template as the pages content
-    // then waitUntil the network is idle to make sure the content has been loaded
-    await page.setContent(html, { waitUntil: 'networkidle0' });
+        // set our compiled html template as the pages content
+        // then waitUntil the network is idle to make sure the content has been loaded
+        await page.setContent(html, { waitUntil: 'networkidle0' });
 
-    // convert the page to pdf with the .pdf() method
-    const pdf = await page.pdf({ format: 'A4' });
-    await browser.close();
+        // convert the page to pdf with the .pdf() method
+        const pdf = await page.pdf({ format: 'A4' });
+        await browser.close();
 
-    // send the result to the client
-    res.statusCode = 200;
-    res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `attachment; filename=${challan[0].invoiceNo}.pdf`);
-    res.send(pdf);
+        // send the result to the client
+        res.statusCode = 200;
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename=${challan[0].invoiceNo}.pdf`);
+        res.send(pdf);
 
-  }
-  catch (err) {
-    console.log(err);
-    res.status(500).json({ message: err.message });
-  }
+    }
+    catch (err) {
+        console.log(err);
+        res.status(500).json({ message: err.message });
+    }
 
-  // compile the file with handlebars and inject the customerName variable
-  //   const template = handlers.compile(`${file}`);
-  //   const html = template({customerName});
+    // compile the file with handlebars and inject the customerName variable
+    //   const template = handlers.compile(`${file}`);
+    //   const html = template({customerName});
 
-  //   // simulate a chrome browser with puppeteer and navigate to a new page
-  //   const browser = await puppeteer.launch();
-  //   const page = await browser.newPage();
+    //   // simulate a chrome browser with puppeteer and navigate to a new page
+    //   const browser = await puppeteer.launch();
+    //   const page = await browser.newPage();
 
-  //   // set our compiled html template as the pages content
-  //   // then waitUntil the network is idle to make sure the content has been loaded
-  //   await page.setContent(html, {waitUntil: 'networkidle0' });
+    //   // set our compiled html template as the pages content
+    //   // then waitUntil the network is idle to make sure the content has been loaded
+    //   await page.setContent(html, {waitUntil: 'networkidle0' });
 
-  //   // convert the page to pdf with the .pdf() method
-  //   const pdf = await page.pdf({format: 'A4' });
-  //   await browser.close();
+    //   // convert the page to pdf with the .pdf() method
+    //   const pdf = await page.pdf({format: 'A4' });
+    //   await browser.close();
 
-  //   // send the result to the client
-  //   res.statusCode = 200;
-  //   res.send(pdf);
-  // } catch (err) {
-  // console.log(err);
-  // res.status(500).json({ message: err.message });
-  // }
+    //   // send the result to the client
+    //   res.statusCode = 200;
+    //   res.send(pdf);
+    // } catch (err) {
+    // console.log(err);
+    // res.status(500).json({ message: err.message });
+    // }
 
 }
 module.exports = { generateInvoice };

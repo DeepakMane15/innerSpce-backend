@@ -9,9 +9,7 @@ const addStock = async (data) => {
     try {
 
         data.forEach(async d => {
-            console.log(d)
             d.quantities.forEach(async q => {
-
 
                 const Stock = new stockSchema({
                     name: d.name + "|" + q.size,
@@ -24,7 +22,7 @@ const addStock = async (data) => {
 
                         } else {
                             await Stock.save().then((stock) => {
-                                console.log(stock)
+
                             })
                                 .catch(err => {
                                     return ({
@@ -80,7 +78,6 @@ const getStocks1 = async (req, res) => {
         ])
             .then(async stocks => {
                 const distinctStocks = stocks.groupBy(product => { return product.name });
-                console.log("disctinct:================>", distinctStocks);
                 // stocks.map(d => {
                 //     d.data.map(dd => {
                 //         d[dd.size] = dd.quantity;
@@ -123,9 +120,6 @@ const getStocks = async (req, res) => {
         else {
             filterObj = {}
         }
-
-        console.log(filterObj)
-
 
         productMasterSchema.aggregate([
             {
@@ -196,12 +190,11 @@ const getStocks = async (req, res) => {
 const addKey = async (stocks) => {
 
     await stocks.forEach(s => {
-        console.log(s)
+        
         s.type.filter(t => {
             s[t.size] = t.value
         })
     })
-    console.log(stocks)
     return stocks;
 }
 

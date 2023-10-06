@@ -5,7 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var cors = require('cors')
 var bodyParser = require('body-parser')
-var multer      = require('multer');
+var multer = require('multer');
 
 
 var indexRouter = require('./routes/index');
@@ -17,6 +17,8 @@ var categoryRouter = require('./routes/category');
 var subCategoryRouter = require('./routes/subCategory');
 var sizeRouter = require('./routes/size');
 var clientRouter = require('./routes/client');
+var tenantRouter = require('./routes/tenant');
+
 
 
 
@@ -36,8 +38,8 @@ app.set('view engine', 'jade');
 connectDB()
 app.use(cors());
 // app.use(bodyParser())
-app.use(bodyParser.json({limit: '50mb'}));
-app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 app.use(logger('dev'));
 app.use(express.json());
 // app.use(express.urlencoded({ extended: false }));
@@ -53,6 +55,7 @@ app.use('/category', categoryRouter);
 app.use('/subCategory', subCategoryRouter);
 app.use('/size', sizeRouter);
 app.use('/client', clientRouter);
+app.use('/tenant', tenantRouter);
 
 
 // app.use('/master', masterRouter);

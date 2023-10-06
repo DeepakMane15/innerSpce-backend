@@ -21,6 +21,9 @@ const invoiceSchema = new mongoose.Schema({
     address: {
         type: String, required: true, trim: true
     },
+    contactName: {
+        type: String, required: true, trim: true
+    },
     contactNo: {
         type: Number, required: true, trim: true
     }

@@ -10,7 +10,6 @@ const addProductMaster = async (req, res) => {
     try {
 
         const { hasSize } = await categorySchema.findOne({ _id: new mongoose.Types.ObjectId(req.body.categoryId) });
-        console.log(hasSize)
         let bulkSave = [];
         const data = {
             name: req.body.name,
@@ -48,8 +47,6 @@ const addProductMaster = async (req, res) => {
 
     }
     catch (err) {
-        console.log(err);
-
         return res.send({
             status: 400, message: err.message, process: 'product'
         });

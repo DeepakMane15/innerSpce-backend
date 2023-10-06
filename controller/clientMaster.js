@@ -10,6 +10,7 @@ const addclient = async (req, res) => {
             address: req.body.address,
             gstNo: req.body.gstNo,
             state: req.body.state,
+            contactName: req.body.contactName,
             contactNo: req.body.contactNo,
 
         })
@@ -59,6 +60,7 @@ const updateClient = async (req, res) => {
             name: req.body.name,
             address: req.body.address,
             gstNo: req.body.gstNo,
+            contactName: req.body.contactName,
             contactNo: req.body.contactNo,
             state: req.body.state
         }

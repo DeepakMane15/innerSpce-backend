@@ -14,6 +14,7 @@ const addTransaction = async (req, res) => {
       type: req.body.type,
       products: req.body.products,
       address: req.body.address,
+      contactName: req.body.contactName,
       contactNo: req.body.contactNo,
       refNo: req.body.refNo,
       refDate: req.body.refDate
@@ -198,6 +199,8 @@ function processTransaction(transactions, product, subCategory, categoryId) {
           tempResult.clientName = invoice.clientName.name;
           tempResult.id = invoice._id;
           tempResult.address = invoice.address;
+          tempResult.state = invoice.clientName.state
+          tempResult.contactName = invoice.contactName;
           tempResult.contactNo = invoice.contactNo;
           tempResult.gstNo = invoice.clientName.gstNo;
           tempResult.packingType = packingType;

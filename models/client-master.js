@@ -25,6 +25,11 @@ const clientSchema = new mongoose.Schema({
         unique: false,
         trim: true
     },
+    contactName: {
+        type: String,
+        required: true,
+        trim: true
+    },
     contactNo: {
         type: Number,
         required: true,
