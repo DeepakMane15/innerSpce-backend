@@ -10,18 +10,18 @@ const puppeteer = require("puppeteer");
 
 
 const generateInvoice = async (req, res) => {
-    const { challan } = req.body;
+  const { challan } = req.body;
 
-    // console.log(challan);
+  // console.log(challan);
 
-    // return;
+  // return;
 
-    try {
-        // read our invoice-template.html file using node fs module
-        // const file = fs.readFileSync('./src/views/template/invoice-template.html', 'utf8');
+  try {
+    // read our invoice-template.html file using node fs module
+    // const file = fs.readFileSync('./src/views/template/invoice-template.html', 'utf8');
 
-        const products = challan.map((product, index) => (
-            ` <tr key=${index}>
+    const products = challan.map((product, index) => (
+      ` <tr key=${index}>
           <td style="text-align: center;">
             ${index + 1}
           </td>
@@ -38,52 +38,52 @@ const generateInvoice = async (req, res) => {
           </td>
         </tr>
         `
-        ))
+    ))
 
 
-        function formatAddress(address) {
-            // let lines = address.split(', ');
-            // let formattedLines = [];
+    function formatAddress(address) {
+      // let lines = address.split(', ');
+      // let formattedLines = [];
 
-            // for (let i = 0; i < 3; i++) {
-            //     if (i < 2) {
-            //         formattedLines.push(lines[i] + ',');
-            //     } else {
-            //         formattedLines.push(lines[i]);
-            //     }
-            // }
+      // for (let i = 0; i < 3; i++) {
+      //     if (i < 2) {
+      //         formattedLines.push(lines[i] + ',');
+      //     } else {
+      //         formattedLines.push(lines[i]);
+      //     }
+      // }
 
-            // return formattedLines.join('<br>');
-            
-              const MAX_LINE_LENGTH = 40;
-    let lines = [];
-    let currentLine = "";
+      // return formattedLines.join('<br>');
 
-    address.split(' ').forEach(word => {
+      const MAX_LINE_LENGTH = 40;
+      let lines = [];
+      let currentLine = "";
+
+      address.split(' ').forEach(word => {
         if (currentLine.length + word.length <= MAX_LINE_LENGTH) {
-            currentLine += (word + " ");
+          currentLine += (word + " ");
         } else {
-            lines.push(currentLine.trim());
-            currentLine = word + " ";
+          lines.push(currentLine.trim());
+          currentLine = word + " ";
         }
-    });
+      });
 
-    // Add the last line
-    lines.push(currentLine.trim());
+      // Add the last line
+      lines.push(currentLine.trim());
 
-    // Join the lines with <br> tags
-    let formattedAddress = lines.join('<br>');
+      // Join the lines with <br> tags
+      let formattedAddress = lines.join('<br>');
 
-    // Print the formatted address
-    return formattedAddress;
+      // Print the formatted address
+      return formattedAddress;
 
-        }
+    }
 
 
-        const clientAddress = formatAddress(challan[0]?.address);
-        console.log(clientAddress);
+    const clientAddress = formatAddress(challan[0]?.address);
+    console.log(clientAddress);
 
-        const file = `
+    const file = `
     <!DOCTYPE html>
 <html lang="en">
 
@@ -236,7 +236,7 @@ const generateInvoice = async (req, res) => {
           <br>
           <span class="bold"> GSTIN.:${challan[0].gstNo}</span>
           <br>
-          <span class="bold">Contact Person : Mr Akhilesh Sharma- ${challan[0].contactNo}</span>
+          <span class="bold">Contact Person : ${challan[0].contactName + '-' + challan[0].contactNo}</span>
         </div>
         <div style=" border-left: 1px solid black; padding-left: 10px;">
           <div style="display: flex; font-size: 14px;">
@@ -256,7 +256,7 @@ const generateInvoice = async (req, res) => {
             </div>
           </div>
           ${challan[0].type === 'sell' ? (
-          `<div style="display: flex; font-size: 14px;margin-top: 10px; ">
+        `<div style="display: flex; font-size: 14px;margin-top: 10px; ">
                         <div className="bold" style="width: 100px;">
                             Ref No.
                         </div>
@@ -273,7 +273,7 @@ const generateInvoice = async (req, res) => {
                             : ${moment(challan[0].refDate).format("DD/MM/YYYY")}
                         </div>
                     </div>`
-            ) : (`
+      ) : (`
             <div>
             </div>
             `)}
@@ -342,88 +342,88 @@ const generateInvoice = async (req, res) => {
 </html>
     `
 
-        const host = req.headers.host;
-        const protocol = req.headers['x-forwarded-proto'] || 'http'
+    const host = req.headers.host;
+    const protocol = req.headers['x-forwarded-proto'] || 'http'
 
 
 
-        // chromium.setHeadlessMode = true;
+    // chromium.setHeadlessMode = true;
 
-        // Optional: If you'd like to disable webgl, true is the default.
-        // chromium.setGraphicsMode = false;
+    // Optional: If you'd like to disable webgl, true is the default.
+    // chromium.setGraphicsMode = false;
 
-        const template = handlers.compile(`${file}`);
+    const template = handlers.compile(`${file}`);
 
-        const logo = protocol + '://' + host + '/images/logos/Picture.png';
-        const kb = protocol + '://' + host + '/images/logos/kb.png';
-        const tline = protocol + '://' + host + '/images/logos/tline.png';
+    const logo = protocol + '://' + host + '/images/logos/Picture.png';
+    const kb = protocol + '://' + host + '/images/logos/kb.png';
+    const tline = protocol + '://' + host + '/images/logos/tline.png';
 
-        const html = template({ challan, logo, tline, kb, products });
+    const html = template({ challan, logo, tline, kb, products });
 
-        // simulate a chrome browser with puppeteer and navigate to a new page
-        // const browser = await puppeteer.launch();
+    // simulate a chrome browser with puppeteer and navigate to a new page
+    // const browser = await puppeteer.launch();
 
-        // const browser = await puppeteer.launch({
-        //   executablePath: puppeteer.executablePath(),
-        // });
-        // const browser = await puppeteer.launch({
-        //     args: chromium.args,
-        //     defaultViewport: chromium.defaultViewport,
-        //     executablePath: await chromium.executablePath(),
-        //     headless: chromium.headless,
-        // });
-        // const browser = await puppeteer.launch();
-        
-        const browser = await puppeteer.launch({
-            args: ['--no-sandbox'],
-            headless: true
-        });
+    // const browser = await puppeteer.launch({
+    //   executablePath: puppeteer.executablePath(),
+    // });
+    // const browser = await puppeteer.launch({
+    //     args: chromium.args,
+    //     defaultViewport: chromium.defaultViewport,
+    //     executablePath: await chromium.executablePath(),
+    //     headless: chromium.headless,
+    // });
+    // const browser = await puppeteer.launch();
 
-        const page = await browser.newPage();
+    const browser = await puppeteer.launch({
+      args: ['--no-sandbox'],
+      headless: true
+    });
 
-        // set our compiled html template as the pages content
-        // then waitUntil the network is idle to make sure the content has been loaded
-        await page.setContent(html, { waitUntil: 'networkidle0' });
+    const page = await browser.newPage();
 
-        // convert the page to pdf with the .pdf() method
-        const pdf = await page.pdf({ format: 'A4' });
-        await browser.close();
+    // set our compiled html template as the pages content
+    // then waitUntil the network is idle to make sure the content has been loaded
+    await page.setContent(html, { waitUntil: 'networkidle0' });
 
-        // send the result to the client
-        res.statusCode = 200;
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', `attachment; filename=${challan[0].invoiceNo}.pdf`);
-        res.send(pdf);
+    // convert the page to pdf with the .pdf() method
+    const pdf = await page.pdf({ format: 'A4' });
+    await browser.close();
 
-    }
-    catch (err) {
-        console.log(err);
-        res.status(500).json({ message: err.message });
-    }
+    // send the result to the client
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename=${challan[0].invoiceNo}.pdf`);
+    res.send(pdf);
 
-    // compile the file with handlebars and inject the customerName variable
-    //   const template = handlers.compile(`${file}`);
-    //   const html = template({customerName});
+  }
+  catch (err) {
+    console.log(err);
+    res.status(500).json({ message: err.message });
+  }
 
-    //   // simulate a chrome browser with puppeteer and navigate to a new page
-    //   const browser = await puppeteer.launch();
-    //   const page = await browser.newPage();
+  // compile the file with handlebars and inject the customerName variable
+  //   const template = handlers.compile(`${file}`);
+  //   const html = template({customerName});
 
-    //   // set our compiled html template as the pages content
-    //   // then waitUntil the network is idle to make sure the content has been loaded
-    //   await page.setContent(html, {waitUntil: 'networkidle0' });
+  //   // simulate a chrome browser with puppeteer and navigate to a new page
+  //   const browser = await puppeteer.launch();
+  //   const page = await browser.newPage();
 
-    //   // convert the page to pdf with the .pdf() method
-    //   const pdf = await page.pdf({format: 'A4' });
-    //   await browser.close();
+  //   // set our compiled html template as the pages content
+  //   // then waitUntil the network is idle to make sure the content has been loaded
+  //   await page.setContent(html, {waitUntil: 'networkidle0' });
 
-    //   // send the result to the client
-    //   res.statusCode = 200;
-    //   res.send(pdf);
-    // } catch (err) {
-    // console.log(err);
-    // res.status(500).json({ message: err.message });
-    // }
+  //   // convert the page to pdf with the .pdf() method
+  //   const pdf = await page.pdf({format: 'A4' });
+  //   await browser.close();
+
+  //   // send the result to the client
+  //   res.statusCode = 200;
+  //   res.send(pdf);
+  // } catch (err) {
+  // console.log(err);
+  // res.status(500).json({ message: err.message });
+  // }
 
 }
 module.exports = { generateInvoice };
