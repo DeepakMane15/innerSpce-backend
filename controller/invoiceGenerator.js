@@ -236,7 +236,7 @@ const generateInvoice = async (req, res) => {
           <br>
           <span class="bold"> GSTIN.:${challan[0].gstNo}</span>
           <br>
-          <span class="bold">Contact Person : ${challan[0].contactName + '-' + challan[0].contactNo}</span>
+          <span class="bold">Contact Person : ${challan[0].contactName + ' - ' + challan[0].contactNo}</span>
         </div>
         <div style=" border-left: 1px solid black; padding-left: 10px;">
           <div style="display: flex; font-size: 14px;">
