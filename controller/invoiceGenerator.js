@@ -99,7 +99,7 @@ const generateInvoice = async (req, res) => {
     }
 
     .invoice-box {
-      width: 620px;
+      width: 600px;
       max-width: 800px;
       margin: auto;
       padding: 30px;

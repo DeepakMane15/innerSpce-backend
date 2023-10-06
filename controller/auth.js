@@ -9,8 +9,7 @@ const signUp = async (req, res) => {
             firstName: req.body.firstName,
             lastName: req.body.lastName,
             userName: req.body.userName,
-            password: req.body.password,
-            role: req.body.role
+            password: req.body.password
         })
 
         userSchema.findOne({ userName: req.body.userName })
@@ -47,49 +46,35 @@ const signUp = async (req, res) => {
 
 const signIn = async (req, res) => {
     try {
-        const { userName, password } = req.body;
-        userSchema.findOne({ userName: userName })
+        userSchema.findOne({ userName: req.body.userName, password: req.body.password })
             .then(async function (user, error) {
-                if (error) throw error;
                 if (user) {
-                    const isMatch = await user.comparePassword(password);
-                    console.log(isMatch)
-                    if (isMatch) {
-                        // Passwords match, user is authenticated
-                        const token = jwt.sign({
-                            data: user
-                        }, process.env.JWT_SECRET, { expiresIn: '365d' });
-                        return res.send({
-                            status: 200,
-                            token: token,
-                            data: user,
-                            message: "Logged in successfully",
-                            process: 'signIn'
-                        });
-                    } else {
-                        // Passwords do not match
-                        return res.send({
-                            status: 400,
-                            message: "Invalid password",
-                            process: 'signIn'
-                        });
-                    }
+                    const token = jwt.sign({
+                        data: user
+                    }, process.env.JWT_SECRET, { expiresIn: '365d' });
+                    return res.send({
+                        status: 200,
+                        token: token,
+                        data: user,
+                        message: "Logged in successfully",
+                        process: 'signIn'
+                    });
                 }
-                else {
+                if (!user) {
                     return res.send({
                         status: 400,
-                        message: "User does not exist",
+                        message: "Invalid username or password",
                         process: 'signIn'
                     });
                 }
             })
             .catch((err) => {
-                res.send({ status: 400, message: err.message, process: 'signIn' })
+                res.send({ status: 400, message: err, process: 'signIn' })
             })
 
     }
     catch (err) {
-        res.send({ status: 400, data: err.message, process: 'signIn' })
+        res.send({ status: 400, data: err, process: 'signIn' })
     }
 }
 
