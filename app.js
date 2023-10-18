@@ -18,7 +18,7 @@ var subCategoryRouter = require('./routes/subCategory');
 var sizeRouter = require('./routes/size');
 var clientRouter = require('./routes/client');
 var tenantRouter = require('./routes/tenant');
-
+var roleRouter = require('./routes/role');
 
 
 
@@ -56,6 +56,7 @@ app.use('/subCategory', subCategoryRouter);
 app.use('/size', sizeRouter);
 app.use('/client', clientRouter);
 app.use('/tenant', tenantRouter);
+app.use('/roles', roleRouter);
 
 
 // app.use('/master', masterRouter);

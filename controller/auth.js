@@ -1,5 +1,7 @@
 const userSchema = require('../models/user')
+const roleSchema = require('../models/role')
 const jwt = require('jsonwebtoken')
+const role = require('../models/role')
 require('dotenv').config()
 
 
@@ -10,7 +12,8 @@ const signUp = async (req, res) => {
             lastName: req.body.lastName,
             userName: req.body.userName,
             password: req.body.password,
-            role: req.body.role
+            role: req.body.role,
+            tid: req.body.tid
         })
 
         userSchema.findOne({ userName: req.body.userName })
@@ -50,9 +53,20 @@ const signIn = async (req, res) => {
         userSchema.findOne({ userName: req.body.userName, password: req.body.password })
             .then(async function (user, error) {
                 if (user) {
+                    const userPermissions = await role.findOne({ name: user.role });
                     const token = jwt.sign({
-                        data: user
+                        data: {
+                            _id: user._id,
+                            tid: user.tid,
+                            firstName: user.firstName,
+                            lastName: user.lastName,
+                            userName: user.userName,
+                            password: user.password,
+                            role: user.role,
+                            permissions: userPermissions.permissions
+                        }
                     }, process.env.JWT_SECRET, { expiresIn: '365d' });
+
                     return res.send({
                         status: 200,
                         token: token,

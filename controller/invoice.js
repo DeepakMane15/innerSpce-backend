@@ -63,7 +63,7 @@ const addTransaction = async (req, res) => {
         if (updateStockCollection) {
           return res.send({
             status: 200,
-            message: "transaction added successfully",
+            message: "Invoice added successfully",
             data: updateStockCollection,
           });
         } else {
@@ -78,15 +78,15 @@ const addTransaction = async (req, res) => {
       return res.send({
         status: 400,
         message: "Unexpected error occured",
-        process: "transactions",
+        process: "Invoice",
       });
     }
   } catch (err) {
 
     return res.send({
       status: 400,
-      message: err,
-      process: "transaction",
+      message: err.message,
+      process: "Invoice",
     });
   }
 };
@@ -330,7 +330,7 @@ const deleteTransactionById = async (req, res) => {
           if (deleteInvoice) {
             return res.send({
               status: 200,
-              message: "transaction deleted successfully",
+              message: "Invoice deleted successfully!",
               data: updateStockCollection,
             });
           } else {
@@ -364,7 +364,7 @@ const deleteTransactionById = async (req, res) => {
   catch (err) {
     return res.send({
       status: 400,
-      message: err,
+      message: err.message,
       process: "deleteTransactionById",
     });
   }

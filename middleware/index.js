@@ -6,7 +6,8 @@ const requireSignin = (req, res, next) => {
             const token = req.headers.authorization.split(" ")[1];
             const user = jwt.verify(token, process.env.JWT_SECRET);
             if (user) {
-                req.userDataFromMiddleware = user;
+                req.userDataFromMiddleware = user.data;
+
             } else {
                 return res.status(400).json({ messsage: "Token expired" })
             }

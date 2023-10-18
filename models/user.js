@@ -4,6 +4,11 @@ const mongoose = require('mongoose')
 
 const userSchema = new mongoose.Schema({
 
+    tid:
+    {
+        type: mongoose.Schema.ObjectId,
+        required: true
+    },
     firstName:
     {
         type: String,
